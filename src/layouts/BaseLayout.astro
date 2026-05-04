@@ -34,7 +34,11 @@ const { title = "Solana Tools", description = "Modern and responsive Solana tool
     </script>
     <title>{title}</title>
   </head>
-  <body class="bg-slate-50 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100">
+  <body
+    class="min-h-screen bg-[var(--background)] text-[var(--foreground)] antialiased
+    [background-image:radial-gradient(circle_at_top_right,rgba(56,189,248,0.12),transparent_35%),radial-gradient(circle_at_top_left,rgba(124,58,237,0.1),transparent_30%)]
+    dark:[background-image:radial-gradient(circle_at_top_right,rgba(56,189,248,0.16),transparent_35%),radial-gradient(circle_at_top_left,rgba(167,139,250,0.12),transparent_30%)]"
+  >
     <Header />
     <div class="mx-auto flex w-full max-w-7xl">
       <Sidebar />
