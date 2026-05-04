@@ -1,0 +1,486 @@
+---
+description: Lightweight Astro layout shell constraints
+alwaysApply: true
+---
+
+# Cursor Rules — Lightweight Astro Header, Sidebar, Footer
+
+## Scope
+
+Build only:
+
+- Header
+- Sidebar
+- Mobile navigation
+- Footer
+- Light mode
+- Dark mode
+- Base responsive layout
+
+Do not build:
+
+- tool forms
+- wallet connection
+- Solana logic
+- API calls
+- transaction logic
+- dashboards
+- React app shell
+
+---
+
+## Core Goal
+
+Create a modern, user-friendly, fully responsive Astro layout shell with almost zero initial JavaScript.
+
+The layout must be:
+
+- extremely lightweight
+- modern
+- clean
+- easy to use
+- mobile-first
+- SEO-friendly
+- accessible
+- fast on low-end mobile devices
+- excellent for Google PageSpeed
+
+Initial JavaScript should be as close to zero as possible.
+
+If something can be done with Astro, HTML, or CSS, do not use JavaScript.
+
+---
+
+## Stack Rules
+
+Use:
+
+- Astro
+- Tailwind CSS
+- semantic HTML
+- CSS-first behavior
+- tiny inline JavaScript only when unavoidable
+
+Do not use:
+
+- React for header/sidebar/footer
+- client-side layout hydration
+- Ant Design
+- Rewind UI package
+- dashboard UI kits
+- Framer Motion
+- animation libraries
+- heavy icon libraries
+- wallet packages
+- Solana packages
+- Reown packages
+
+---
+
+## Astro-First Rules
+
+Header, sidebar, mobile navigation, and footer must be Astro components.
+
+Recommended structure:
+
+```txt
+src/layouts/BaseLayout.astro
+
+src/components/layout/Header.astro
+src/components/layout/Sidebar.astro
+src/components/layout/MobileNav.astro
+src/components/layout/Footer.astro
+src/components/layout/ThemeToggle.astro
+src/components/layout/NavGroup.astro
+src/components/layout/NavItem.astro
+```
+
+Do not convert static layout components into React islands.
+
+Do not hydrate static navigation.
+
+---
+
+## Initial JavaScript Rules
+
+Initial JavaScript must be minimal or zero.
+
+Allowed JavaScript only for:
+
+* dark/light theme persistence
+* mobile menu open/close if CSS-only is not practical
+
+Avoid JavaScript for:
+
+* desktop sidebar
+* footer
+* active link rendering
+* hover effects
+* dropdown animations
+* layout state
+* navigation rendering
+
+Prefer:
+
+* Astro-rendered HTML
+* CSS media queries
+* Tailwind responsive classes
+* native HTML behavior where possible
+
+---
+
+## Theme Rules
+
+Support:
+
+* light mode
+* dark mode
+
+Use Tailwind `dark:` classes.
+
+Dark mode should work by toggling the `dark` class on `<html>`.
+
+Use a tiny inline head script only to prevent theme flicker and read saved preference.
+
+Theme preference:
+
+* read from `localStorage`
+* fallback to system preference
+* save user choice to `localStorage`
+
+No theme provider.
+
+No React theme component.
+
+---
+
+## No Animation Rules
+
+Do not add animations.
+
+Do not use:
+
+* Framer Motion
+* animation libraries
+* page transitions
+* animated gradients
+* animated backgrounds
+* slide animations
+* complex hover motion
+
+Allowed:
+
+* instant state changes
+* simple color change on hover
+* simple border/background change on hover
+
+---
+
+## Header Rules
+
+Header must be:
+
+* Astro-rendered
+* lightweight
+* modern
+* clean
+* sticky only if it stays simple and fast
+* readable in light and dark mode
+
+Header should include:
+
+* logo
+* primary navigation
+* theme toggle
+* mobile menu button
+
+Header must not include real wallet logic now.
+
+A future wallet button placeholder is allowed only as static HTML.
+
+Header must not import client-only or blockchain packages.
+
+Recommended height:
+
+```txt
+64px
+```
+
+---
+
+## Sidebar Rules
+
+Desktop sidebar must be:
+
+* Astro-rendered
+* lightweight
+* modern
+* user-friendly
+* easy to scan
+* grouped by tool category
+* visible on desktop
+* hidden on mobile
+* collapsible on desktop
+
+Sidebar should include:
+
+* category labels
+* navigation links
+* active state
+* hover state
+* optional lightweight inline SVG icons
+* clear collapse/expand control
+
+Recommended groups:
+
+* Token Creation
+* Token Management
+* Authority Tools
+* Liquidity Tools
+* Wallet Tools
+* Bundler Tools
+* Guides
+
+Avoid:
+
+* nested complex menus
+* client-side state
+* heavy icon imports
+* JavaScript-driven navigation
+
+Sidebar collapse behavior:
+
+* keep interactions instant (no animation)
+* prefer CSS-first approach where practical
+* if JavaScript is used, keep it tiny and only for toggling collapsed state
+* preserve accessibility for keyboard users and screen readers
+
+Recommended width:
+
+```txt
+260px
+```
+
+---
+
+## Mobile Navigation Rules
+
+Mobile navigation must be:
+
+* very lightweight
+* touch-friendly
+* readable
+* fast
+* full responsive
+* no horizontal scroll
+
+On mobile:
+
+* hide desktop sidebar
+* show menu button in header
+* show simple mobile nav panel/menu
+* close menu after link click if JavaScript is used
+
+Minimum tap target:
+
+```txt
+44px
+```
+
+Do not use heavy drawer/sheet libraries.
+
+Do not use animation.
+
+Prefer CSS-first implementation.
+
+---
+
+## Footer Rules
+
+Footer must be:
+
+* Astro-rendered
+* static HTML
+* lightweight
+* modern
+* clean
+* responsive
+* readable in light and dark mode
+
+Footer should include:
+
+* short brand description
+* important tool links
+* guide links
+* trust/safety links
+* legal links
+* copyright
+
+Avoid:
+
+* oversized footer
+* huge link blocks
+* decorative clutter
+* heavy icons
+* JavaScript
+
+---
+
+## Responsive Rules
+
+Use mobile-first design.
+
+Required behavior:
+
+```txt
+Mobile:
+Header
+Mobile Navigation
+Main Content
+Footer
+
+Desktop:
+Header
+Sidebar + Main Content
+Footer
+```
+
+Layout must work on:
+
+* small mobile
+* large mobile
+* tablet
+* laptop
+* desktop
+
+No horizontal scroll.
+
+Recommended spacing:
+
+```txt
+Mobile padding: 16px
+Tablet padding: 24px
+Desktop padding: 32px
+```
+
+---
+
+## Design Rules
+
+Design must feel:
+
+* modern
+* clean
+* professional
+* calm
+* user-friendly
+* lightweight
+* trustworthy
+
+Avoid:
+
+* crypto casino style
+* excessive neon
+* heavy gradients
+* glassmorphism everywhere
+* tiny gray text
+* visual clutter
+* noisy backgrounds
+* oversized decorative elements
+
+Use:
+
+* clear spacing
+* readable typography
+* subtle borders
+* soft surfaces
+* simple active states
+* one primary accent color
+* clean dark mode layers
+
+---
+
+## Accessibility Rules
+
+Use semantic HTML:
+
+* `header`
+* `nav`
+* `aside`
+* `main`
+* `footer`
+
+Mobile menu button must include:
+
+* `aria-label`
+* `aria-expanded`
+* `aria-controls`
+
+Theme toggle must include accessible text or label.
+
+Navigation must be keyboard accessible.
+
+Contrast must be readable in both light and dark mode.
+
+---
+
+## Performance Rules
+
+Must keep PageSpeed impact extremely low.
+
+Do:
+
+* render layout with Astro
+* avoid hydration
+* avoid large dependencies
+* avoid unnecessary JavaScript
+* use inline SVG only when needed
+* keep DOM clean
+* keep CSS practical
+* keep mobile simple
+
+Do not:
+
+* import React for layout
+* import Solana SDK
+* import wallet libraries
+* import Reown
+* import animation libraries
+* import large icon packs globally
+* import UI dashboard kits
+* use large images in layout
+* use video backgrounds
+* use animated backgrounds
+
+---
+
+## Acceptance Checklist
+
+This step is complete only when:
+
+* Header is Astro-rendered
+* Sidebar is Astro-rendered
+* Footer is Astro-rendered
+* Mobile navigation is lightweight
+* Sidebar is collapsible
+* Initial JavaScript is near zero
+* No React hydration exists for layout
+* No wallet package exists
+* No Solana package exists
+* No Reown package exists
+* No animation library exists
+* Light mode works
+* Dark mode works
+* Mobile layout works
+* Desktop layout works
+* No horizontal scroll exists
+* Navigation is easy to use
+* UI is modern and clean
+* PageSpeed impact is minimal
+* Site remains readable without JavaScript
+
+## Final Rule
+
+If a design choice increases initial JavaScript, dependency size, or mobile weight, reject it.
+
+Choose the lighter, simpler, faster solution.

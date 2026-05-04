@@ -1,0 +1,4 @@
+@import "tailwindcss";
+
+/* Use class-based dark mode so html.dark controls theme. */
+@custom-variant dark (&:where(.dark, .dark *));
