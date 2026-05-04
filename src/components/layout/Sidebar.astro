@@ -1,55 +1,271 @@
 ---
+import {
+  Briefcase,
+  ChevronDown,
+  Coins,
+  Droplets,
+  Percent,
+  Shield,
+  TrendingUp,
+  WalletMinimal,
+  Wrench,
+  Sparkles,
+} from "@lucide/astro";
+import MeteoraIcon from "../icons/MeteoraIcon.astro";
+import OrcaIcon from "../icons/OrcaIcon.astro";
+import PumpFunIcon from "../icons/PumpFunIcon.astro";
+import PumpSwapIcon from "../icons/PumpSwapIcon.astro";
+import RaydiumLaunchlabIcon from "../icons/RaydiumLaunchlabIcon.astro";
+
 const groups = [
   {
-    title: "Token Creation",
-    items: [
-      { href: "/create/token", label: "Create Token" },
-      { href: "/create/metadata", label: "Token Metadata" },
-    ],
-  },
-  {
     title: "Token Management",
+    icon: Coins,
     items: [
-      { href: "/manage/freeze", label: "Freeze / Unfreeze" },
-      { href: "/manage/revoke", label: "Revoke Authorities" },
+      { href: "/mint-solana-token", label: "Mint Solana Token" },
+      { href: "/burn-solana-token", label: "Burn Solana Token" },
+      { href: "/update-token-metadata", label: "Update  Token Metadata" },
+      { href: "/view-token-metadata", label: "View  Token Metadata" },
+      { href: "/snapshot-token-holders", label: "Snapshot  Token Holders" },
+      { href: "/solana-token-multisender", label: "Solana Token Multisender" },
+      { href: "/freeze-account", label: "Freeze Account" },
+      { href: "/unfreeze-account", label: "Unfreeze Account" },
     ],
   },
   {
-    title: "Guides",
+    title: "Authority Management",
+    icon: Shield,
     items: [
-      { href: "/guides/getting-started", label: "Getting Started" },
-      { href: "/guides/security", label: "Security Basics" },
+      { href: "/revoke-solana-authority", label: "Revoke Solana Authority" },
+      { href: "/revoke-mint-authority", label: "Revoke Mint Authority" },
+      { href: "/revoke-freeze-authority", label: "Revoke Freeze Authority" },
+      { href: "/revoke-metadata-authority", label: "Revoke Metadata Authority" },
+      { href: "/revoke-tax-config-authority", label: "Revoke Tax Config Authority" },
+      { href: "/revoke-withdraw-authority", label: "Revoke Withdraw Authority" },
+      { href: "/transfer-token-authority", label: "Transfer  Token Authority" },
+    ],
+  },
+  {
+    title: "Tax Tools",
+    icon: Percent,
+    items: [
+      { href: "/claim-tax-fee", label: "Claim Tax Fee" },
+      { href: "/change-tax-setting", label: "Change Tax Setting" },
+    ],
+  },
+  {
+    title: "Manage Liquidity",
+    icon: Droplets,
+    items: [
+      { href: "/add-solana-liquidity", label: "Add Solana Liquidity" },
+      { href: "/remove-solana-liquidity", label: "Remove Solana Liquidity" },
+      { href: "/burn-solana-liquidity", label: "Burn Solana Liquidity" },
+    ],
+  },
+  {
+    title: "Pump.fun Zone",
+    icon: PumpFunIcon,
+    items: [
+      { href: "/pump-bundler", label: "Pump Bundler" },
+      { href: "/pump-volume-bot", label: "Pump Volume Bot" },
+      { href: "/pump-bundle-buy", label: "Pump Bundle Buy" },
+      { href: "/pump-bundle-sell", label: "Pump Bundle Sell" },
+    ],
+  },
+  {
+    title: "Pumpswap Zone",
+    icon: PumpSwapIcon,
+    items: [
+      { href: "/pumpswap-bundler", label: "Pumpswap Bundler" },
+      { href: "/pumpswap-volume-bot", label: "Pumpswap Volume Bot" },
+      { href: "/pumpswap-bundle-buy", label: "Pumpswap Bundle Buy" },
+      { href: "/pumpswap-bundle-sell", label: "Pumpswap Bundle Sell" },
+    ],
+  },
+  {
+    title: "Meteora Zone",
+    icon: MeteoraIcon,
+    items: [
+      { href: "/meteora-bundler", label: "Meteora Bundler" },
+      { href: "/meteora-volume-bot", label: "Meteora Volume Bot" },
+      { href: "/meteora-bundle-buy", label: "Meteora Bundle Buy" },
+      { href: "/meteora-bundle-sell", label: "Meteora Bundle Sell" },
+    ],
+  },
+  {
+    title: "Orca Zone",
+    icon: OrcaIcon,
+    items: [
+      { href: "/orca-bundler", label: "Orca Bundler" },
+      { href: "/orca-volume-bot", label: "Orca Volume Bot" },
+      { href: "/orca-bundle-buy", label: "Orca Bundle Buy" },
+      { href: "/orca-bundle-sell", label: "Orca Bundle Sell" },
+    ],
+  },
+  {
+    title: "Launchlab Zone",
+    icon: RaydiumLaunchlabIcon,
+    items: [
+      { href: "/launchlab-bundler", label: "Launchlab Bundler" },
+      { href: "/launchlab-volume-bot", label: "Launchlab Volume Bot" },
+      { href: "/launchlab-bundle-buy", label: "Launchlab Bundle Buy" },
+      { href: "/launchlab-bundle-sell", label: "Launchlab Bundle Sell" },
+    ],
+  },
+  {
+    title: "Solana Utilities",
+    icon: Wrench,
+    items: [
+      { href: "/claim-your-sol", label: "Claim Your SOL" },
+      { href: "/wrap-and-unwrap-sol", label: "Wrap and Unwrap SOL" },
+      { href: "/collect-tokens", label: "Collect Tokens" },
+      { href: "/collect-sol", label: "Collect SOL" },
+    ],
+  },
+  {
+    title: "Wallet Management",
+    icon: WalletMinimal,
+    items: [
+      { href: "/manage-solana-wallets", label: "Manage Solana Wallets" },
+      { href: "/vanity-address-generator", label: "Vanity Address Generator" },
     ],
   },
 ];
+
+const topLevelTools = [
+  { href: "/create-solana-token", label: "Create Solana Token", icon: Coins },
+  { href: "/create-liquidity-pool", label: "Create Liquidity Pool", icon: Droplets },
+  { href: "/volume-bot", label: "Volume Bot", icon: TrendingUp },
+  { href: "/solana-portfolio-tracker", label: "Portfolio Tracker", icon: Briefcase },
+];
 ---
 
-<aside class="hidden w-[260px] shrink-0 border-r border-slate-200 bg-white p-4 lg:block dark:border-slate-800 dark:bg-slate-950" aria-label="Sidebar">
-  <nav aria-label="Tool navigation">
-    <ul class="grid gap-5">
-      {
-        groups.map((group) => (
-          <li>
-            <h2 class="mb-2 px-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-              {group.title}
-            </h2>
-            <ul class="grid gap-1">
-              {
-                group.items.map((item) => (
-                  <li>
-                    <a
-                      href={item.href}
-                      class="flex min-h-11 items-center rounded-md px-3 text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100"
-                    >
-                      {item.label}
-                    </a>
-                  </li>
-                ))
-              }
-            </ul>
-          </li>
-        ))
-      }
-    </ul>
-  </nav>
+<aside
+  class="hidden h-[calc(100vh-4rem)] w-[288px] shrink-0 overflow-hidden border-r border-zinc-200/80 bg-zinc-50/80 lg:sticky lg:top-16 lg:block dark:border-zinc-800/80 dark:bg-zinc-950"
+  aria-label="Sidebar"
+>
+  <div class="flex h-full flex-col">
+    <!-- Sidebar head -->
+    <div class="border-b border-zinc-200/80 px-4 py-4 dark:border-zinc-800/80">
+      <a
+        href="/"
+        class="group flex items-center gap-3 rounded-2xl border border-zinc-200 bg-white p-3 shadow-sm shadow-zinc-200/60 hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-black/20 dark:hover:border-zinc-700"
+      >
+        <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-zinc-950 text-white dark:bg-white dark:text-zinc-950">
+          <Sparkles size={18} aria-hidden="true" />
+        </span>
+
+        <span class="min-w-0">
+          <span class="block truncate text-sm font-semibold text-zinc-950 dark:text-zinc-50">
+            Solana Tools
+          </span>
+          <span class="block truncate text-xs text-zinc-500 dark:text-zinc-400">
+            Create, manage, launch
+          </span>
+        </span>
+      </a>
+    </div>
+
+    <!-- Scrollable nav -->
+    <nav class="min-h-0 flex-1 overflow-y-auto px-3 py-4" aria-label="Tool navigation">
+      <!-- Primary tools -->
+      <div class="mb-5">
+        <p class="mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-400 dark:text-zinc-500">
+          Main tools
+        </p>
+
+        <ul class="grid gap-1.5">
+          {
+            topLevelTools.map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  class="group flex min-h-11 items-center gap-3 rounded-xl border border-transparent px-3 text-sm font-medium text-zinc-700 hover:border-zinc-200 hover:bg-white hover:text-zinc-950 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:text-zinc-300 dark:hover:border-zinc-800 dark:hover:bg-zinc-900 dark:hover:text-zinc-50"
+                >
+                  <span class="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-zinc-100 text-zinc-600 group-hover:bg-zinc-950 group-hover:text-white dark:bg-zinc-800 dark:text-zinc-300 dark:group-hover:bg-white dark:group-hover:text-zinc-950">
+                    <item.icon size={16} aria-hidden="true" />
+                  </span>
+
+                  <span class="truncate">{item.label}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <!-- Tool groups -->
+      <div>
+        <p class="mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-400 dark:text-zinc-500">
+          Categories
+        </p>
+
+        <ul class="grid gap-2">
+          {
+            groups.map((group) => (
+              <li>
+                <details class="group rounded-2xl border border-transparent open:border-zinc-200 open:bg-white open:shadow-sm open:shadow-zinc-200/50 dark:open:border-zinc-800 dark:open:bg-zinc-900 dark:open:shadow-black/20">
+                  <summary class="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 rounded-2xl border border-transparent px-3 text-sm font-medium text-zinc-700 hover:border-zinc-200 hover:bg-white hover:text-zinc-950 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:text-zinc-300 dark:hover:border-zinc-800 dark:hover:bg-zinc-900 dark:hover:text-zinc-50">
+                    <span class="flex min-w-0 items-center gap-3">
+                      <span class="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-zinc-100 text-zinc-600 group-hover:bg-zinc-950 group-hover:text-white dark:bg-zinc-800 dark:text-zinc-300 dark:group-hover:bg-white dark:group-hover:text-zinc-950">
+                        <group.icon size={16} aria-hidden="true" />
+                      </span>
+
+                      <span class="truncate">{group.title}</span>
+                    </span>
+
+                    <span class="flex shrink-0 items-center">
+                      <ChevronDown
+                        size={16}
+                        class="text-zinc-400 group-open:rotate-180 dark:text-zinc-500"
+                        aria-hidden="true"
+                      />
+                    </span>
+                  </summary>
+
+                  <ul class="mx-3 mb-3 mt-1 grid gap-1 pl-3">
+                    {
+                      group.items.map((item) => (
+                        <li>
+                          <a
+                            href={item.href}
+                            class="group/item flex min-h-9 items-center gap-2 rounded-lg px-2 text-sm text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-50"
+                          >
+                            <span
+                              class="h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-300 group-hover/item:bg-zinc-700 dark:bg-zinc-700 dark:group-hover/item:bg-zinc-200"
+                              aria-hidden="true"
+                            />
+                            <span class="truncate">{item.label}</span>
+                          </a>
+                        </li>
+                      ))
+                    }
+                  </ul>
+                </details>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Sidebar footer -->
+    <div class="border-t border-zinc-200/80 p-3 dark:border-zinc-800/80">
+      <a
+        href="/solana-token-management"
+        class="flex items-center justify-between rounded-2xl border border-zinc-200 bg-white px-3 py-3 text-sm font-medium text-zinc-700 hover:border-zinc-300 hover:text-zinc-950 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:text-zinc-50"
+      >
+        <span>
+          <span class="block text-xs font-semibold text-zinc-950 dark:text-zinc-50">
+            Need a guide?
+          </span>
+          <span class="block text-xs font-normal text-zinc-500 dark:text-zinc-400">
+            Token management hub
+          </span>
+        </span>
+
+        <span class="text-zinc-400" aria-hidden="true">→</span>
+      </a>
+    </div>
+  </div>
 </aside>

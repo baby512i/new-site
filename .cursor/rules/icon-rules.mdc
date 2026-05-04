@@ -1,0 +1,22 @@
+---
+description: Icon usage standards for lightweight Astro UI
+alwaysApply: true
+---
+
+# Icon Rules
+
+- Use `@lucide/astro` for static UI icons in Astro components.
+- Icons in header, sidebar, footer, cards, breadcrumbs, FAQs, and static sections must be rendered by Astro, not React.
+- Use local inline SVG files only for brand/protocol logos such as Solana, Pump.fun, Raydium, Meteora, Orca, and LaunchLab.
+- Do not use icon fonts.
+- Do not use `react-icons`.
+- Do not use animated icon libraries.
+- Do not import icon libraries globally.
+- Do not put icons behind client-side JavaScript when they can be rendered as static SVG.
+- Keep icon size consistent:
+  - Sidebar icons: `16px`
+  - Card icons: `20px`
+  - Hero/tool icons: `24px` or `32px` max
+- Use `currentColor` so icons inherit text color from Tailwind classes.
+- Decorative icons must include `aria-hidden="true"`.
+- Meaningful icon-only buttons must include accessible labels.
