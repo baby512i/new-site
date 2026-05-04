@@ -27,6 +27,9 @@ const { title = "Solana Tools", description = "Modern and responsive Solana tool
         if (saved === "dark" || (!saved && prefersDark)) {
           document.documentElement.classList.add("dark");
         }
+        if (localStorage.getItem("sidebar-collapsed") === "true") {
+          document.documentElement.classList.add("sidebar-collapsed");
+        }
       })();
     </script>
     <title>{title}</title>

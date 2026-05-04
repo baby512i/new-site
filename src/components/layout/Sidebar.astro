@@ -1,7 +1,10 @@
 ---
 import {
+  BookOpen,
   Briefcase,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Coins,
   Droplets,
   Percent,
@@ -140,22 +143,44 @@ const topLevelTools = [
 ];
 ---
 
-<aside
-  class="hidden h-[calc(100vh-4rem)] w-[288px] shrink-0 overflow-hidden border-r border-zinc-200/80 bg-zinc-50/80 lg:sticky lg:top-16 lg:block dark:border-zinc-800/80 dark:bg-zinc-950"
-  aria-label="Sidebar"
+<div
+  class="relative hidden shrink-0 lg:block"
+  style="overflow: visible;"
 >
+  <button
+    type="button"
+    id="sidebar-toggle"
+    class="absolute z-30 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-600 shadow-md hover:border-zinc-300 hover:text-zinc-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-zinc-50"
+    style="top: 5.25rem; right: -0.875rem;"
+    aria-controls="app-sidebar"
+    aria-expanded="true"
+    aria-label="Collapse sidebar"
+  >
+    <span class="sidebar-toggle-icon-expanded" aria-hidden="true">
+      <ChevronLeft size={18} />
+    </span>
+    <span class="sidebar-toggle-icon-collapsed hidden" aria-hidden="true">
+      <ChevronRight size={18} />
+    </span>
+  </button>
+
+  <aside
+    id="app-sidebar"
+    class="sidebar-root relative hidden h-[calc(100vh-4rem)] w-[288px] shrink-0 overflow-hidden border-r border-zinc-200/80 bg-zinc-50/80 lg:sticky lg:top-16 lg:block dark:border-zinc-800/80 dark:bg-zinc-950"
+    aria-label="Sidebar"
+  >
   <div class="flex h-full flex-col">
     <!-- Sidebar head -->
-    <div class="border-b border-zinc-200/80 px-4 py-4 dark:border-zinc-800/80">
+    <div class="sidebar-head border-b border-zinc-200/80 px-4 py-4 dark:border-zinc-800/80">
       <a
         href="/"
-        class="group flex items-center gap-3 rounded-2xl border border-zinc-200 bg-white p-3 shadow-sm shadow-zinc-200/60 hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-black/20 dark:hover:border-zinc-700"
+        class="sidebar-brand group flex items-center gap-3 rounded-2xl border border-zinc-200 bg-white p-3 shadow-sm shadow-zinc-200/60 hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-black/20 dark:hover:border-zinc-700"
       >
         <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-zinc-950 text-white dark:bg-white dark:text-zinc-950">
           <Sparkles size={18} aria-hidden="true" />
         </span>
 
-        <span class="min-w-0">
+        <span class="sidebar-brand-text min-w-0">
           <span class="block truncate text-sm font-semibold text-zinc-950 dark:text-zinc-50">
             Solana Tools
           </span>
@@ -167,10 +192,10 @@ const topLevelTools = [
     </div>
 
     <!-- Scrollable nav -->
-    <nav class="min-h-0 flex-1 overflow-y-auto px-3 py-4" aria-label="Tool navigation">
+    <nav class="sidebar-scroll min-h-0 flex-1 overflow-y-auto overflow-x-visible px-3 py-4" aria-label="Tool navigation">
       <!-- Primary tools -->
       <div class="mb-5">
-        <p class="mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-400 dark:text-zinc-500">
+        <p class="sidebar-section-title mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-400 dark:text-zinc-500">
           Main tools
         </p>
 
@@ -180,13 +205,14 @@ const topLevelTools = [
               <li>
                 <a
                   href={item.href}
-                  class="group flex min-h-11 items-center gap-3 rounded-xl border border-transparent px-3 text-sm font-medium text-zinc-700 hover:border-zinc-200 hover:bg-white hover:text-zinc-950 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:text-zinc-300 dark:hover:border-zinc-800 dark:hover:bg-zinc-900 dark:hover:text-zinc-50"
+                  title={item.label}
+                  class="sidebar-nav-link group flex min-h-11 items-center gap-3 rounded-xl border border-transparent px-3 text-sm font-medium text-zinc-700 hover:border-zinc-200 hover:bg-white hover:text-zinc-950 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:text-zinc-300 dark:hover:border-zinc-800 dark:hover:bg-zinc-900 dark:hover:text-zinc-50"
                 >
                   <span class="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-zinc-100 text-zinc-600 group-hover:bg-zinc-950 group-hover:text-white dark:bg-zinc-800 dark:text-zinc-300 dark:group-hover:bg-white dark:group-hover:text-zinc-950">
                     <item.icon class="h-5 w-5" aria-hidden="true" />
                   </span>
 
-                  <span class="truncate">{item.label}</span>
+                  <span class="sidebar-link-label truncate">{item.label}</span>
                 </a>
               </li>
             ))
@@ -196,39 +222,40 @@ const topLevelTools = [
 
       <!-- Tool groups -->
       <div>
-        <p class="mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-400 dark:text-zinc-500">
+        <p class="sidebar-section-title mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-400 dark:text-zinc-500">
           Categories
         </p>
 
-        <ul class="grid gap-2">
+        <ul class="sidebar-categories grid gap-2">
           {
             groups.map((group) => (
-              <li>
-                <details class="group rounded-2xl border border-transparent open:border-zinc-200 open:bg-white open:shadow-sm open:shadow-zinc-200/50 dark:open:border-zinc-800 dark:open:bg-zinc-900 dark:open:shadow-black/20">
-                  <summary class="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 rounded-2xl border border-transparent px-3 text-sm font-medium text-zinc-700 hover:border-zinc-200 hover:bg-white hover:text-zinc-950 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:text-zinc-300 dark:hover:border-zinc-800 dark:hover:bg-zinc-900 dark:hover:text-zinc-50">
+              <li class="sidebar-category-item">
+                <details class="group/details rounded-2xl border border-transparent open:border-zinc-200 open:bg-white open:shadow-sm open:shadow-zinc-200/50 dark:open:border-zinc-800 dark:open:bg-zinc-900 dark:open:shadow-black/20">
+                  <summary class="sidebar-category-summary flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 rounded-2xl border border-transparent px-3 text-sm font-medium text-zinc-700 hover:border-zinc-200 hover:bg-white hover:text-zinc-950 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:text-zinc-300 dark:hover:border-zinc-800 dark:hover:bg-zinc-900 dark:hover:text-zinc-50">
                     <span class="flex min-w-0 items-center gap-3">
-                      <span class="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-zinc-100 text-zinc-600 group-hover:bg-zinc-950 group-hover:text-white dark:bg-zinc-800 dark:text-zinc-300 dark:group-hover:bg-white dark:group-hover:text-zinc-950">
+                      <span class="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-zinc-100 text-zinc-600 group-hover/details:bg-zinc-950 group-hover/details:text-white dark:bg-zinc-800 dark:text-zinc-300 dark:group-hover/details:bg-white dark:group-hover/details:text-zinc-950">
                         <group.icon class="h-5 w-5" aria-hidden="true" />
                       </span>
 
-                      <span class="truncate">{group.title}</span>
+                      <span class="sidebar-link-label truncate">{group.title}</span>
                     </span>
 
-                    <span class="flex shrink-0 items-center">
+                    <span class="sidebar-chevron flex shrink-0 items-center">
                       <ChevronDown
                         size={16}
-                        class="text-zinc-400 group-open:rotate-180 dark:text-zinc-500"
+                        class="text-zinc-400 group-open/details:rotate-180 dark:text-zinc-500"
                         aria-hidden="true"
                       />
                     </span>
                   </summary>
 
-                  <ul class="mx-3 mb-3 mt-1 grid gap-1 pl-3">
+                  <ul class="sidebar-submenu mx-3 mb-3 mt-1 grid gap-1 pl-3">
                     {
                       group.items.map((item) => (
                         <li>
                           <a
                             href={item.href}
+                            title={item.label}
                             class="group/item flex min-h-9 items-center gap-2 rounded-lg px-2 text-sm text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-50"
                           >
                             <span
@@ -250,12 +277,13 @@ const topLevelTools = [
     </nav>
 
     <!-- Sidebar footer -->
-    <div class="border-t border-zinc-200/80 p-3 dark:border-zinc-800/80">
+    <div class="sidebar-footer border-t border-zinc-200/80 p-3 dark:border-zinc-800/80">
       <a
         href="/solana-token-management"
-        class="flex items-center justify-between rounded-2xl border border-zinc-200 bg-white px-3 py-3 text-sm font-medium text-zinc-700 hover:border-zinc-300 hover:text-zinc-950 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:text-zinc-50"
+        title="Token management hub — guides"
+        class="sidebar-footer-link flex items-center justify-between rounded-2xl border border-zinc-200 bg-white px-3 py-3 text-sm font-medium text-zinc-700 hover:border-zinc-300 hover:text-zinc-950 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:text-zinc-50"
       >
-        <span>
+        <span class="sidebar-footer-text min-w-0">
           <span class="block text-xs font-semibold text-zinc-950 dark:text-zinc-50">
             Need a guide?
           </span>
@@ -264,8 +292,158 @@ const topLevelTools = [
           </span>
         </span>
 
-        <span class="text-zinc-400" aria-hidden="true">→</span>
+        <span class="sidebar-footer-arrow text-zinc-400" aria-hidden="true">→</span>
+        <span class="sidebar-footer-icon hidden place-items-center text-zinc-600 dark:text-zinc-400">
+          <BookOpen size={20} aria-hidden="true" />
+        </span>
       </a>
     </div>
   </div>
-</aside>
+  </aside>
+</div>
+
+<script is:inline>
+  (() => {
+    const toggle = document.getElementById("sidebar-toggle");
+    const aside = document.getElementById("app-sidebar");
+    if (!toggle || !aside) return;
+
+    const KEY = "sidebar-collapsed";
+    const expandedLabel = "Collapse sidebar";
+    const collapsedLabel = "Expand sidebar";
+
+    const sync = () => {
+      const collapsed = document.documentElement.classList.contains("sidebar-collapsed");
+      toggle.setAttribute("aria-expanded", collapsed ? "false" : "true");
+      toggle.setAttribute("aria-label", collapsed ? collapsedLabel : expandedLabel);
+      toggle.querySelector(".sidebar-toggle-icon-expanded")?.classList.toggle("hidden", collapsed);
+      toggle.querySelector(".sidebar-toggle-icon-collapsed")?.classList.toggle("hidden", !collapsed);
+    };
+
+    sync();
+    toggle.addEventListener("click", () => {
+      document.documentElement.classList.toggle("sidebar-collapsed");
+      localStorage.setItem(KEY, document.documentElement.classList.contains("sidebar-collapsed") ? "true" : "false");
+      sync();
+    });
+
+    const expandSelectors =
+      "a.sidebar-brand, a.sidebar-nav-link, summary.sidebar-category-summary, a.sidebar-footer-link, .sidebar-submenu a";
+
+    aside.addEventListener("click", (e) => {
+      if (!document.documentElement.classList.contains("sidebar-collapsed")) return;
+      const t = e.target;
+      if (!(t instanceof Element)) return;
+      if (!t.closest(expandSelectors)) return;
+      document.documentElement.classList.remove("sidebar-collapsed");
+      localStorage.setItem(KEY, "false");
+      sync();
+    });
+  })();
+</script>
+
+<style is:global>
+  html.sidebar-collapsed .sidebar-root {
+    width: 4rem;
+    max-width: 4rem;
+    overflow-x: visible;
+    overflow-y: hidden;
+  }
+
+  html.sidebar-collapsed .sidebar-root .sidebar-scroll {
+    overflow-x: visible;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  html.sidebar-collapsed .sidebar-root .sidebar-head {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  html.sidebar-collapsed .sidebar-root .sidebar-brand {
+    justify-content: center;
+    padding: 0.5rem;
+    gap: 0;
+  }
+
+  html.sidebar-collapsed .sidebar-root .sidebar-brand-text {
+    display: none;
+  }
+
+  html.sidebar-collapsed .sidebar-root .sidebar-section-title {
+    display: none;
+  }
+
+  html.sidebar-collapsed .sidebar-root .sidebar-link-label {
+    display: none;
+  }
+
+  html.sidebar-collapsed .sidebar-root .sidebar-chevron {
+    display: none;
+  }
+
+  html.sidebar-collapsed .sidebar-root .sidebar-nav-link,
+  html.sidebar-collapsed .sidebar-root .sidebar-category-summary {
+    justify-content: center;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+    gap: 0;
+  }
+
+  html.sidebar-collapsed .sidebar-root .sidebar-category-summary .flex.min-w-0 {
+    min-width: 0;
+    justify-content: center;
+  }
+
+  html.sidebar-collapsed .sidebar-root .sidebar-footer {
+    padding: 0.5rem;
+  }
+
+  html.sidebar-collapsed .sidebar-root .sidebar-footer-link {
+    justify-content: center;
+    padding: 0.625rem;
+  }
+
+  html.sidebar-collapsed .sidebar-root .sidebar-footer-text,
+  html.sidebar-collapsed .sidebar-root .sidebar-footer-arrow {
+    display: none;
+  }
+
+  html.sidebar-collapsed .sidebar-root .sidebar-footer-icon {
+    display: grid;
+  }
+
+  html.sidebar-collapsed .sidebar-root .sidebar-category-item {
+    position: relative;
+    z-index: 1;
+  }
+
+  html.sidebar-collapsed .sidebar-root .sidebar-submenu {
+    position: absolute;
+    left: calc(100% + 0.25rem);
+    top: 0;
+    margin: 0;
+    width: 16rem;
+    max-height: min(70vh, 24rem);
+    overflow-y: auto;
+    padding: 0.5rem;
+    padding-left: 0.75rem;
+    border-radius: 0.75rem;
+    border: 1px solid rgb(228 228 231 / 0.8);
+    background: rgb(255 255 255);
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.08);
+    z-index: 40;
+  }
+
+  html.dark.sidebar-collapsed .sidebar-root .sidebar-submenu {
+    border-color: rgb(39 39 42 / 0.8);
+    background: rgb(24 24 27);
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.35);
+  }
+
+  html.sidebar-collapsed .sidebar-root details[open] {
+    position: relative;
+    z-index: 20;
+  }
+</style>

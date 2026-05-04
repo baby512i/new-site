@@ -1,0 +1,147 @@
+---
+description: Brand direction and color palette (Dark Navy + Electric Cyan + Soft Purple) for a serious SEO-first Solana Tools UI
+alwaysApply: true
+---
+
+# Solana Tools Brand + Color Palette
+
+## Brand Direction
+
+- This site must feel **serious, modern, technical, and trustworthy** (financial/crypto tooling), not like a “crypto casino”.
+- **Avoid spraying Solana neon green** across the UI. Use Solana/Web3 cues subtly via **cyan** accents instead.
+- Primary identity is **Blue/Cyan**. Purple is a **secondary flavor** for highlights only.
+- Base neutrals should remain **Slate-like** for readability in long SEO pages and forms.
+
+## Color System (CSS Variables Reference)
+
+Use these tokens as the source-of-truth palette for light/dark mode. Prefer mapping Tailwind usage to these roles (background, foreground, card, border, primary, etc.).
+
+### Light mode
+
+```css
+:root {
+  --background: #F8FAFC;
+  --foreground: #0F172A;
+
+  --card: #FFFFFF;
+  --card-foreground: #0F172A;
+
+  --primary: #2563EB;
+  --primary-hover: #1D4ED8;
+  --primary-foreground: #FFFFFF;
+
+  --secondary: #7C3AED;
+  --secondary-hover: #6D28D9;
+
+  --accent: #06B6D4;
+  --accent-soft: #E0F7FA;
+
+  --muted: #F1F5F9;
+  --muted-foreground: #64748B;
+
+  --border: #E2E8F0;
+  --input: #CBD5E1;
+
+  --success: #16A34A;
+  --warning: #F59E0B;
+  --danger: #DC2626;
+
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #334155;
+  --sidebar-active: #EFF6FF;
+  --sidebar-active-foreground: #1D4ED8;
+}
+```
+
+### Dark mode
+
+```css
+.dark {
+  --background: #020617;
+  --foreground: #E5E7EB;
+
+  --card: #0F172A;
+  --card-foreground: #F8FAFC;
+
+  --primary: #38BDF8;
+  --primary-hover: #0EA5E9;
+  --primary-foreground: #020617;
+
+  --secondary: #A78BFA;
+  --secondary-hover: #8B5CF6;
+
+  --accent: #22D3EE;
+  --accent-soft: rgba(34, 211, 238, 0.12);
+
+  --muted: #111827;
+  --muted-foreground: #94A3B8;
+
+  --border: #1E293B;
+  --input: #334155;
+
+  --success: #22C55E;
+  --warning: #FBBF24;
+  --danger: #F87171;
+
+  --sidebar: #020617;
+  --sidebar-foreground: #CBD5E1;
+  --sidebar-active: rgba(56, 189, 248, 0.12);
+  --sidebar-active-foreground: #7DD3FC;
+}
+```
+
+## UI Usage Guidance (Tailwind-first)
+
+### Header
+
+- Light: `bg-white border-b border-slate-200`
+- Dark: `dark:bg-slate-950 dark:border-slate-800`
+- Main CTA:
+  - `bg-blue-600 text-white hover:bg-blue-700`
+  - `dark:bg-sky-400 dark:text-slate-950 dark:hover:bg-sky-300`
+
+### Sidebar
+
+- Active item: `bg-blue-50 text-blue-700 dark:bg-sky-400/10 dark:text-sky-300`
+- Normal item: `text-slate-600 hover:bg-slate-100 hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-900 dark:hover:text-white`
+- Icons: `text-slate-400 group-hover:text-blue-600 dark:text-slate-500 dark:group-hover:text-sky-300`
+
+### Cards / Tool Boxes
+
+- Light: `bg-white border border-slate-200 shadow-sm`
+- Dark: `dark:bg-slate-900 dark:border-slate-800`
+- Hover (subtle, no animation): `hover:border-blue-300 dark:hover:border-sky-700`
+
+### Forms
+
+- Input: `bg-white border-slate-300 text-slate-900 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100`
+- Focus: `focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:focus:border-sky-400 dark:focus:ring-sky-400/20`
+- Error: `border-red-500 text-red-600 dark:text-red-400`
+- Warning box: `bg-amber-50 border-amber-200 text-amber-900 dark:bg-amber-950/30 dark:border-amber-800 dark:text-amber-200`
+
+## SEO Pages (important)
+
+- Keep readable neutral surfaces; avoid loud gradients, neon blocks, or purple-overuse.
+- Use cyan/purple only as **small accents** (badges, highlights, links, subtle hero background).
+
+## Allowed “Hero Gradient” (subtle, CSS-only)
+
+Use only on key landing areas; keep it subtle and static (no animation).
+
+Light:
+
+```css
+bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.18),transparent_35%),radial-gradient(circle_at_top_left,rgba(124,58,237,0.14),transparent_30%)]
+```
+
+Dark:
+
+```css
+dark:bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.16),transparent_35%),radial-gradient(circle_at_top_left,rgba(167,139,250,0.12),transparent_30%)]
+```
+
+## Hard “Don’ts”
+
+- Do not use Solana neon green as the site’s dominant UI color.
+- Do not add animation libraries or animated gradients.
+- Do not make the UI “flashy”; it must read like a serious tool.
