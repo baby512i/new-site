@@ -1,5 +1,5 @@
 ---
-import { Menu } from "@lucide/astro";
+import { Menu, Moon, Sun } from "@lucide/astro";
 ---
 
 <header class="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur dark:border-slate-800 dark:bg-slate-950/95">
@@ -33,7 +33,12 @@ import { Menu } from "@lucide/astro";
         class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 dark:hover:bg-slate-900 dark:focus-visible:outline-sky-400"
         aria-label="Toggle color theme"
       >
-        <span id="theme-toggle-icon" aria-hidden="true">🌙</span>
+        <span id="theme-toggle-icon-dark" class="hidden" aria-hidden="true">
+          <Sun class="h-5 w-5" aria-hidden="true" />
+        </span>
+        <span id="theme-toggle-icon-light" aria-hidden="true">
+          <Moon class="h-5 w-5" aria-hidden="true" />
+        </span>
       </button>
 
     </div>
@@ -43,24 +48,16 @@ import { Menu } from "@lucide/astro";
 <script is:inline>
   const root = document.documentElement;
   const themeButton = document.getElementById("theme-toggle");
-  const themeIcon = document.getElementById("theme-toggle-icon");
+  const darkIcon = document.getElementById("theme-toggle-icon-dark");
+  const lightIcon = document.getElementById("theme-toggle-icon-light");
 
   const setThemeIcon = () => {
-    if (!themeIcon) return;
-    themeIcon.textContent = root.classList.contains("dark") ? "☀️" : "🌙";
+    const isDark = root.classList.contains("dark");
+    darkIcon?.classList.toggle("hidden", !isDark);
+    lightIcon?.classList.toggle("hidden", isDark);
   };
 
-  const applyStoredTheme = () => {
-    const saved = localStorage.getItem("theme");
-    if (saved === "dark" || (!saved && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
-    setThemeIcon();
-  };
-
-  applyStoredTheme();
+  setThemeIcon();
 
   themeButton?.addEventListener("click", () => {
     const isDark = root.classList.toggle("dark");

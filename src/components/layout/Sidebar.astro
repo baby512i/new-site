@@ -374,14 +374,17 @@ const homeActive = isActive("/");
     const expandedLabel = "Collapse sidebar";
     const collapsedLabel = "Expand sidebar";
     const isMobileViewport = () => window.innerWidth < 1024;
+    const desktopQuery = window.matchMedia("(min-width: 1024px)");
+    const expandedIcon = toggle.querySelector(".sidebar-toggle-icon-expanded");
+    const collapsedIcon = toggle.querySelector(".sidebar-toggle-icon-collapsed");
 
     const sync = () => {
       const collapsed = root.classList.contains("sidebar-collapsed");
       const mobileOpen = root.classList.contains("sidebar-mobile-open") && isMobileViewport();
       toggle.setAttribute("aria-expanded", collapsed ? "false" : "true");
       toggle.setAttribute("aria-label", collapsed ? collapsedLabel : expandedLabel);
-      toggle.querySelector(".sidebar-toggle-icon-expanded")?.classList.toggle("hidden", collapsed);
-      toggle.querySelector(".sidebar-toggle-icon-collapsed")?.classList.toggle("hidden", !collapsed);
+      expandedIcon?.classList.toggle("hidden", collapsed);
+      collapsedIcon?.classList.toggle("hidden", !collapsed);
       backdrop.classList.toggle("hidden", !mobileOpen);
       mobileButton?.setAttribute("aria-expanded", String(mobileOpen));
       aside.classList.toggle("-translate-x-full", !mobileOpen);
@@ -429,8 +432,8 @@ const homeActive = isActive("/");
       sync();
     });
 
-    window.addEventListener("resize", () => {
-      if (!isMobileViewport()) {
+    desktopQuery.addEventListener("change", (event) => {
+      if (event.matches) {
         root.classList.remove("sidebar-mobile-open");
       }
       sync();
