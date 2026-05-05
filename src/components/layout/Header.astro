@@ -27,7 +27,7 @@ import { Menu, Moon, Sun } from "@lucide/astro";
     </div>
 
     <div class="flex items-center gap-2">
-      <button
+          <button
         id="theme-toggle"
         type="button"
         class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 dark:hover:bg-slate-900 dark:focus-visible:outline-sky-400"
@@ -40,6 +40,17 @@ import { Menu, Moon, Sun } from "@lucide/astro";
           <Moon class="h-5 w-5" aria-hidden="true" />
         </span>
       </button>
+      
+      <button
+        id="wallet-connect-button"
+        type="button"
+        class="inline-flex min-h-11 items-center justify-center rounded-md border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 dark:hover:bg-slate-900 dark:focus-visible:outline-sky-400"
+        aria-label="Connect Solana wallet"
+      >
+        Connect Wallet
+      </button>
+
+
 
     </div>
   </div>
@@ -65,4 +76,87 @@ import { Menu, Moon, Sun } from "@lucide/astro";
     setThemeIcon();
   });
 
+</script>
+
+<script>
+  const walletButton = document.getElementById("wallet-connect-button");
+  const WALLET_CACHE_KEY = "solana-wallet-address";
+
+  const shortAddress = (address) => `${address.slice(0, 4)}...${address.slice(-4)}`;
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  let walletUnsubscribe = null;
+
+  const setWalletButtonConnectedState = (address) => {
+    if (!(walletButton instanceof HTMLButtonElement)) return;
+
+    if (!address) {
+      walletButton.textContent = "Connect Wallet";
+      walletButton.setAttribute("aria-label", "Connect Solana wallet");
+      return;
+    }
+
+    walletButton.textContent = shortAddress(address);
+    walletButton.setAttribute("aria-label", `Connected Solana wallet ${shortAddress(address)}`);
+  };
+
+  if (walletButton instanceof HTMLButtonElement) {
+    const cachedAddress = window.localStorage.getItem(WALLET_CACHE_KEY);
+    setWalletButtonConnectedState(cachedAddress);
+  }
+
+  const refreshWalletButtonState = async (walletModule, attempts = 8, waitMs = 250) => {
+    for (let index = 0; index < attempts; index += 1) {
+      const status = await walletModule.getSolanaWalletStatus();
+
+      if (status?.address) {
+        setWalletButtonConnectedState(status.address);
+        return;
+      }
+
+      if (index < attempts - 1) {
+        await delay(waitMs);
+      }
+    }
+
+    setWalletButtonConnectedState(null);
+  };
+
+  const ensureWalletSubscription = async (walletModule) => {
+    if (walletUnsubscribe) {
+      return;
+    }
+
+    walletUnsubscribe = await walletModule.subscribeSolanaWalletStatus((status) => {
+      setWalletButtonConnectedState(status?.address || null);
+    });
+  };
+
+  walletButton?.addEventListener("click", async () => {
+    if (!(walletButton instanceof HTMLButtonElement)) return;
+
+    const originalText = walletButton.textContent || "Connect Wallet";
+
+    try {
+      walletButton.disabled = true;
+      walletButton.textContent = "Loading Wallet...";
+
+      const wallet = await import("../../lib/wallet/reown-client");
+      await ensureWalletSubscription(wallet);
+      await wallet.openSolanaWalletModal();
+      await refreshWalletButtonState(wallet);
+    } catch (error) {
+      console.error("Failed to open Solana wallet modal:", error);
+      walletButton.textContent = "Wallet Error";
+
+      window.setTimeout(() => {
+        walletButton.textContent = originalText;
+      }, 1800);
+    } finally {
+      walletButton.disabled = false;
+
+      if (walletButton.textContent === "Loading Wallet...") {
+        walletButton.textContent = originalText;
+      }
+    }
+  });
 </script>

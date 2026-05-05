@@ -16,6 +16,8 @@
     "@astrojs/react": "^5.0.4",
     "@astrojs/sitemap": "^3.7.2",
     "@lucide/astro": "^1.14.0",
+    "@reown/appkit": "^1.8.19",
+    "@reown/appkit-adapter-solana": "^1.8.19",
     "@tailwindcss/vite": "^4.2.4",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
