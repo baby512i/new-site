@@ -1,12 +1,12 @@
 ---
-import { Menu, Moon, Sun } from "@lucide/astro";
+import { Check, ChevronDown, Circle, CircleHelp, Menu, Moon, Settings, SlidersHorizontal, Sparkles, Sun, Wallet, X, Zap } from "@lucide/astro";
 import Button from "../ui/Button.astro";
 
 ---
 
-<header class="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur dark:border-slate-800 dark:bg-slate-950/95">
-  <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center gap-2">
+<header class="sticky top-0 z-50 border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950/95">
+  <div class="mx-auto flex h-[var(--header-height)] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-2.5">
       <Button
         id="mobile-sidebar-button"
         type="button"
@@ -22,7 +22,7 @@ import Button from "../ui/Button.astro";
 
       <a
         href="/"
-        class="inline-flex items-center gap-2 rounded-md text-slate-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:text-slate-50 dark:focus-visible:outline-sky-400"
+        class="hidden items-center gap-2 rounded-md text-slate-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:text-slate-50 dark:focus-visible:outline-sky-400 min-[850px]:inline-flex"
         aria-label="Solana tools home"
       >
         <span class="inline-flex h-9 w-9 items-center justify-center rounded-md bg-blue-600 text-sm font-semibold text-white dark:bg-sky-400 dark:text-slate-950">ST</span>
@@ -31,60 +31,633 @@ import Button from "../ui/Button.astro";
     </div>
 
     <div class="flex items-center gap-2">
-          <Button
-        id="theme-toggle"
+      <Button
+        id="mobile-header-settings-button"
         type="button"
         variant="outline"
         size="icon"
-        aria-label="Toggle color theme"
+        class="min-[850px]:hidden"
+        aria-label="Open header settings"
       >
-        <span id="theme-toggle-icon-dark" class="hidden" aria-hidden="true">
-          <Sun class="h-5 w-5" aria-hidden="true" />
-        </span>
-        <span id="theme-toggle-icon-light" aria-hidden="true">
-          <Moon class="h-5 w-5" aria-hidden="true" />
-        </span>
+        <Settings class="h-5 w-5" aria-hidden="true" />
       </Button>
-      
-<Button
-  id="wallet-connect-button"
-  variant="primary"
-  data-wallet-state="disconnected"
-  ariaLabel="Connect Solana wallet"
->
-  Connect Wallet
-</Button>
 
+      <div class="hidden items-center gap-3 min-[850px]:flex">
+        <div id="header-network-picker" class="relative">
+          <button
+            id="header-network-trigger"
+            type="button"
+            aria-label="Select Solana network"
+            aria-haspopup="menu"
+            aria-expanded="false"
+            class="inline-flex h-12 items-center gap-2.5 rounded-[var(--radius-lg)] border border-slate-200 bg-[var(--card)] px-5 text-sm font-semibold text-[var(--foreground)] outline-none hover:bg-slate-50 focus:border-[var(--ring)] focus:ring-2 focus:ring-[var(--ring-soft)] dark:border-sky-500/45 dark:bg-[#07142d] dark:text-slate-100 dark:hover:bg-[#0a1a3a] dark:shadow-[0_0_0_1px_rgba(56,189,248,0.16)]"
+          >
+            <span id="header-network-current-icon" class="inline-flex" aria-hidden="true">
+              <span class="inline-flex h-5 w-5 items-center justify-center rounded-full border-2 border-emerald-400 bg-emerald-500/15 dark:border-emerald-300 dark:bg-emerald-400/20">
+                <span class="h-2 w-2 rounded-full bg-emerald-500 dark:bg-emerald-300"></span>
+              </span>
+            </span>
+            <span id="header-network-current-label">Mainnet</span>
+            <ChevronDown class="h-[18px] w-[18px] text-[var(--muted-foreground)]" aria-hidden="true" />
+          </button>
 
+          <div
+            id="header-network-menu"
+            role="menu"
+            aria-label="Network options"
+            class="absolute right-0 top-[calc(100%+0.55rem)] z-50 hidden min-w-52 rounded-[var(--radius-xl)] border border-slate-200 bg-[var(--card)] p-2 shadow-[var(--shadow-md)] dark:border-sky-500/30 dark:bg-[#071229] dark:shadow-[0_10px_30px_-12px_rgba(2,132,199,0.6)]"
+          >
+            <button
+              type="button"
+              role="menuitemradio"
+              aria-checked="true"
+              data-network-option="mainnet"
+              class="flex w-full items-center gap-3 rounded-[var(--radius-md)] px-3 py-3 text-left text-sm font-semibold text-[var(--foreground)] hover:bg-slate-50 dark:text-slate-100 dark:hover:bg-sky-500/10"
+            >
+              <span class="inline-flex h-4 w-4 items-center justify-center rounded-full border-2 border-emerald-400 bg-emerald-500/15 dark:border-emerald-300 dark:bg-emerald-400/20">
+                <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-emerald-300"></span>
+              </span>
+              <span class="flex-1">Mainnet</span>
+              <Check id="header-network-check-mainnet" class="h-4 w-4 text-[var(--primary)]" aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              role="menuitemradio"
+              aria-checked="false"
+              data-network-option="devnet"
+              class="flex w-full items-center gap-3 rounded-[var(--radius-md)] px-3 py-3 text-left text-sm font-semibold text-[var(--foreground)] hover:bg-slate-50 dark:text-slate-100 dark:hover:bg-sky-500/10"
+            >
+              <Zap class="h-4 w-4 text-amber-500 dark:text-amber-400" aria-hidden="true" />
+              <span class="flex-1">Devnet</span>
+              <Check id="header-network-check-devnet" class="hidden h-4 w-4 text-[var(--primary)]" aria-hidden="true" />
+            </button>
+          </div>
+        </div>
 
+        <Button
+          id="header-fees-button"
+          type="button"
+          variant="outline"
+          size="sm"
+          class="h-12 rounded-[var(--radius-lg)] !border !border-slate-200 !bg-white px-5 !text-sm !font-semibold text-[var(--foreground)] hover:!bg-slate-50 dark:!border-slate-700 dark:!bg-slate-950 dark:hover:!bg-slate-900"
+          aria-label="Open transaction fee settings"
+        >
+          <SlidersHorizontal class="h-[18px] w-[18px]" aria-hidden="true" />
+          Fees
+        </Button>
+
+        <Button
+          id="header-pro-button"
+          type="button"
+          variant="soft"
+          size="sm"
+          class="h-12 rounded-[var(--radius-lg)] !border !border-slate-200 !bg-violet-50 px-5 !text-sm !font-semibold text-violet-700 hover:!bg-violet-100 dark:!border-slate-700 dark:!bg-violet-500/10 dark:text-violet-300 dark:hover:!bg-violet-500/20"
+          aria-label="Open PRO plans"
+        >
+          <Sparkles class="h-[18px] w-[18px]" aria-hidden="true" />
+          PRO
+        </Button>
+
+        <Button
+          id="theme-toggle"
+          type="button"
+          variant="outline"
+          size="icon"
+          class="h-12 w-12 rounded-[var(--radius-lg)] !border !border-slate-200 !bg-white hover:!bg-slate-50 dark:!border-slate-700 dark:!bg-slate-950 dark:hover:!bg-slate-900"
+          aria-label="Toggle color theme"
+        >
+          <span id="theme-toggle-icon-dark" class="hidden" aria-hidden="true">
+            <Sun class="h-[21px] w-[21px]" aria-hidden="true" />
+          </span>
+          <span id="theme-toggle-icon-light" aria-hidden="true">
+            <Moon class="h-[21px] w-[21px]" aria-hidden="true" />
+          </span>
+        </Button>
+      </div>
+      <Button
+        id="wallet-connect-button"
+        variant="primary"
+        class="h-12 rounded-[var(--radius-lg)] px-5 text-base font-semibold"
+
+        data-wallet-state="disconnected"
+        ariaLabel="Connect Solana wallet"
+      >
+        <span id="wallet-connect-icon" class="inline-flex" aria-hidden="true">
+          <Wallet class="h-5 w-5" aria-hidden="true" />
+        </span>
+        <span id="wallet-connect-label">Connect Wallet</span>
+      </Button>
     </div>
   </div>
 </header>
 
+<dialog
+  id="mobile-header-settings-dialog"
+  class="fixed left-1/2 top-1/2 m-0 w-[min(34rem,calc(100vw-1rem))] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-[var(--radius-2xl)] border border-slate-200 bg-white p-0 text-slate-900 shadow-[var(--shadow-lg)] backdrop:bg-slate-950/55 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
+  aria-labelledby="mobile-header-settings-title"
+>
+  <div class="border-b border-slate-200 px-5 pb-4 pt-3 dark:border-slate-800">
+    <div class="mx-auto mb-3 h-1.5 w-14 rounded-full bg-slate-300 dark:bg-slate-700"></div>
+    <div class="flex items-center justify-between gap-3">
+      <h2 id="mobile-header-settings-title" class="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">Header Settings</h2>
+      <button
+        id="mobile-header-settings-close"
+        type="button"
+        class="inline-flex h-11 w-11 items-center justify-center rounded-[var(--radius-lg)] border border-slate-300 text-slate-500 hover:bg-slate-100 hover:text-slate-800 focus:outline-none focus:ring-2 focus:ring-[var(--ring-soft)] dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-200"
+        aria-label="Close header settings"
+      >
+        <X class="h-5 w-5" aria-hidden="true" />
+      </button>
+    </div>
+  </div>
+
+  <div class="space-y-0">
+    <section class="space-y-4 border-b border-slate-200 px-6 py-6 dark:border-slate-800">
+      <p class="text-lg font-semibold text-slate-800 dark:text-slate-200">Network</p>
+      <div class="grid gap-4">
+        <button
+          id="mobile-network-mainnet"
+          type="button"
+          class="flex min-h-[4.25rem] items-center gap-3 rounded-[var(--radius-xl)] border border-slate-300 px-5 text-left text-base font-semibold text-slate-800 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-100 dark:hover:bg-slate-900"
+        >
+          <span class="inline-flex h-4 w-4 items-center justify-center rounded-full border-2 border-emerald-400 bg-emerald-500/15 dark:border-emerald-300 dark:bg-emerald-400/20">
+            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-emerald-300"></span>
+          </span>
+          <span class="flex-1 text-left">Mainnet</span>
+          <Check id="mobile-network-check-mainnet" class="h-6 w-6 text-blue-600 dark:text-sky-300" aria-hidden="true" />
+          <Circle id="mobile-network-unchecked-mainnet" class="hidden h-6 w-6 text-slate-400 dark:text-slate-500" aria-hidden="true" />
+        </button>
+        <button
+          id="mobile-network-devnet"
+          type="button"
+          class="flex min-h-[4.25rem] items-center gap-3 rounded-[var(--radius-xl)] border border-slate-300 px-5 text-left text-base font-semibold text-slate-800 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-100 dark:hover:bg-slate-900"
+        >
+          <Zap class="h-5 w-5 text-amber-500 dark:text-amber-400" aria-hidden="true" />
+          <span class="flex-1 text-left">Devnet</span>
+          <Check id="mobile-network-check-devnet" class="hidden h-6 w-6 text-blue-600 dark:text-sky-300" aria-hidden="true" />
+          <Circle id="mobile-network-unchecked-devnet" class="h-6 w-6 text-slate-400 dark:text-slate-500" aria-hidden="true" />
+        </button>
+      </div>
+    </section>
+
+    <section class="space-y-4 border-b border-slate-200 px-6 py-6 dark:border-slate-800">
+      <p class="text-lg font-semibold text-slate-800 dark:text-slate-200">Fee Settings</p>
+      <Button
+        id="mobile-open-fees-button"
+        type="button"
+        variant="outline"
+        fullWidth
+        class="!min-h-[4.25rem] !justify-between !rounded-[var(--radius-xl)] !border-blue-200 !bg-blue-50/60 !px-5 !text-base !font-semibold !text-slate-800 dark:!border-sky-600/35 dark:!bg-sky-500/10 dark:!text-slate-100"
+      >
+        <span class="inline-flex items-center gap-3">
+          <SlidersHorizontal class="h-5 w-5 text-blue-600 dark:text-sky-300" aria-hidden="true" />
+          Fee Details
+        </span>
+        <ChevronDown class="-rotate-90 h-5 w-5 text-blue-600 dark:text-sky-300" aria-hidden="true" />
+      </Button>
+      <Button
+        id="mobile-open-pro-button"
+        type="button"
+        variant="outline"
+        fullWidth
+        class="!min-h-[4.25rem] !justify-between !rounded-[var(--radius-xl)] !border-blue-200 !bg-blue-50/60 !px-5 !text-base !font-semibold !text-slate-800 dark:!border-sky-600/35 dark:!bg-sky-500/10 dark:!text-slate-100"
+      >
+        <span class="inline-flex items-center gap-3">
+          <SlidersHorizontal class="h-5 w-5 text-blue-600 dark:text-sky-300" aria-hidden="true" />
+          PRO Plans
+        </span>
+        <ChevronDown class="-rotate-90 h-5 w-5 text-blue-600 dark:text-sky-300" aria-hidden="true" />
+      </Button>
+    </section>
+
+    <section class="px-6 py-6">
+      <Button
+        id="mobile-theme-toggle"
+        type="button"
+        variant="outline"
+        fullWidth
+        ariaLabel="Toggle color theme"
+        class="!min-h-[4.25rem] !justify-between !rounded-[var(--radius-xl)] !border-violet-200 !bg-gradient-to-r !from-violet-50 !to-cyan-50 !px-5 !text-base !font-semibold !text-slate-800 dark:!border-violet-700/40 dark:!from-violet-500/10 dark:!to-cyan-500/10 dark:!text-slate-100"
+      >
+        <span class="inline-flex items-center gap-3">
+          <span id="mobile-theme-toggle-icon-dark" class="hidden" aria-hidden="true">
+            <Sun class="h-5 w-5 text-violet-500 dark:text-violet-300" aria-hidden="true" />
+          </span>
+          <span id="mobile-theme-toggle-icon-light" aria-hidden="true">
+            <Moon class="h-5 w-5 text-violet-500 dark:text-violet-300" aria-hidden="true" />
+          </span>
+          <span>Toggle Theme</span>
+        </span>
+        <span class="inline-flex items-center gap-2">
+          <Sun class="h-4 w-4 text-amber-500/90 dark:text-amber-300" aria-hidden="true" />
+          <Moon class="h-4 w-4 text-violet-500 dark:text-violet-300" aria-hidden="true" />
+          <ChevronDown class="-rotate-90 h-5 w-5 text-violet-500 dark:text-violet-300" aria-hidden="true" />
+        </span>
+      </Button>
+    </section>
+  </div>
+</dialog>
+
+<dialog
+  id="header-fees-dialog"
+  class="fixed left-1/2 top-1/2 m-0 w-[min(36rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 rounded-[var(--radius-2xl)] border border-slate-200 bg-white p-0 text-slate-900 shadow-[var(--shadow-lg)] backdrop:bg-slate-950/65 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
+  aria-labelledby="header-fees-title"
+>
+  <div class="border-b border-slate-200 px-6 py-5 dark:border-slate-800">
+    <div class="flex items-center justify-between gap-3">
+      <div>
+        <h2 id="header-fees-title" class="text-2xl font-semibold leading-none tracking-tight">
+          Configuration
+        </h2>
+        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
+          Adjust network and fee presets for faster transaction confirmation.
+        </p>
+      </div>
+      <button
+        id="header-fees-close"
+        type="button"
+        class="inline-flex h-11 w-11 items-center justify-center rounded-[var(--radius-md)] border border-slate-200 text-slate-500 hover:bg-slate-100 hover:text-slate-800 focus:outline-none focus:ring-2 focus:ring-[var(--ring-soft)] dark:border-slate-800 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-200"
+        aria-label="Close fee settings"
+      >
+        <X class="h-4 w-4" aria-hidden="true" />
+      </button>
+    </div>
+  </div>
+
+  <div class="space-y-6 px-6 py-6">
+    <div class="space-y-3">
+      <label for="fees-priority-select" class="inline-flex items-center gap-1.5 text-base font-semibold">
+        Priority Fee
+        <CircleHelp class="h-[18px] w-[18px] text-slate-400 dark:text-slate-500" aria-hidden="true" />
+      </label>
+      <select
+        id="fees-priority-select"
+        class="w-full min-h-14 rounded-[var(--radius-lg)] border border-slate-200 bg-white px-4 text-base font-medium text-slate-900 outline-none focus:border-[var(--ring)] focus:ring-2 focus:ring-[var(--ring-soft)] dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
+      >
+        <option value="normal" data-fee-sol="0.005">Normal - 0.005 SOL</option>
+        <option value="fast" data-fee-sol="0.007">Fast - 0.007 SOL</option>
+        <option value="turbo" data-fee-sol="0.01">Turbo - 0.01 SOL</option>
+      </select>
+      <div class="flex flex-wrap gap-2 text-[12px]">
+        <span class="rounded-[var(--radius-full)] bg-slate-100 px-3 py-1.5 font-medium text-slate-500 dark:bg-slate-900 dark:text-slate-400">Market 0.00013 SOL</span>
+        <span class="rounded-[var(--radius-full)] bg-slate-100 px-3 py-1.5 font-semibold text-slate-500 dark:bg-sky-500/15 dark:text-sky-300">95% 0.007 SOL</span>
+      </div>
+    </div>
+
+    <div class="space-y-3">
+      <label for="fees-jito-select" class="inline-flex items-center gap-1.5 text-base font-semibold">
+        Jito Tip
+        <CircleHelp class="h-[18px] w-[18px] text-slate-400 dark:text-slate-500" aria-hidden="true" />
+      </label>
+      <select
+        id="fees-jito-select"
+        class="w-full min-h-14 rounded-[var(--radius-lg)] border border-slate-200 bg-white px-4 text-base font-medium text-slate-900 outline-none focus:border-[var(--ring)] focus:ring-2 focus:ring-[var(--ring-soft)] dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
+      >
+        <option value="5x" data-fee-sol="0.0005">5X - 0.0005 SOL</option>
+        <option value="10x" data-fee-sol="0.001">10X - 0.001 SOL</option>
+        <option value="20x" data-fee-sol="0.002">20X - 0.002 SOL</option>
+      </select>
+      <div class="flex flex-wrap gap-2 text-[12px]">
+        <span class="rounded-[var(--radius-full)] bg-slate-100 px-3 py-1.5 font-medium text-slate-500 dark:bg-slate-900 dark:text-slate-400">Market 0 SOL</span>
+        <span class="rounded-[var(--radius-full)] bg-slate-100 px-3 py-1.5 font-semibold text-slate-500 dark:bg-sky-500/15 dark:text-sky-300">99% 0.0002 SOL</span>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<dialog
+  id="header-pro-dialog"
+  class="fixed left-1/2 top-1/2 m-0 w-[min(42rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 rounded-[var(--radius-2xl)] border border-slate-200 bg-white p-0 text-slate-900 shadow-[var(--shadow-lg)] backdrop:bg-slate-950/65 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
+  aria-labelledby="header-pro-title"
+>
+  <div class="space-y-5 p-6">
+    <div class="flex items-start justify-between gap-3">
+      <div>
+        <h2 id="header-pro-title" class="text-3xl font-semibold tracking-tight">Become PRO</h2>
+        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">PRO unlocks premium SOL tools.</p>
+      </div>
+      <button
+        id="header-pro-close"
+        type="button"
+        class="inline-flex h-11 w-11 items-center justify-center rounded-[var(--radius-md)] border border-slate-200 text-slate-500 hover:bg-slate-100 hover:text-slate-800 focus:outline-none focus:ring-2 focus:ring-[var(--ring-soft)] dark:border-slate-800 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-200"
+        aria-label="Close PRO plans"
+      >
+        <X class="h-4 w-4" aria-hidden="true" />
+      </button>
+    </div>
+
+    <fieldset class="space-y-3 border-0 p-0">
+      <legend class="sr-only">Select a PRO plan</legend>
+
+      <label class="group flex cursor-pointer items-center gap-3 rounded-[var(--radius-lg)] border border-slate-200 px-4 py-3 dark:border-slate-800 dark:bg-slate-950 has-[:checked]:border-[var(--ring)] has-[:checked]:bg-slate-50 dark:has-[:checked]:bg-sky-500/10 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[var(--ring-soft)]">
+        <input
+          type="radio"
+          name="header-pro-plan"
+          value="degen"
+          checked
+          class="peer sr-only"
+        />
+        <span
+          aria-hidden="true"
+          class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-slate-400 bg-white peer-checked:border-[var(--ring)] dark:border-slate-600 dark:bg-slate-950"
+        >
+          <span class="h-2.5 w-2.5 rounded-full bg-[var(--ring)] opacity-0 transition-opacity group-has-[:checked]:opacity-100"></span>
+        </span>
+        <span class="min-w-0 flex-1">
+          <span class="block text-base font-semibold leading-tight">Degen Pass</span>
+          <span class="mt-1 block text-sm text-slate-500 dark:text-slate-400">1 Day Free Access</span>
+        </span>
+        <span class="text-base font-semibold text-slate-900 dark:text-sky-300">5 SOL</span>
+      </label>
+
+      <label class="group flex cursor-pointer items-center gap-3 rounded-[var(--radius-lg)] border border-slate-200 px-4 py-3 dark:border-slate-800 dark:bg-slate-950 has-[:checked]:border-[var(--ring)] has-[:checked]:bg-slate-50 dark:has-[:checked]:bg-sky-500/10 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[var(--ring-soft)]">
+        <input type="radio" name="header-pro-plan" value="trenches" class="peer sr-only" />
+        <span
+          aria-hidden="true"
+          class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-slate-400 bg-white peer-checked:border-[var(--ring)] dark:border-slate-600 dark:bg-slate-950"
+        >
+          <span class="h-2.5 w-2.5 rounded-full bg-[var(--ring)] opacity-0 transition-opacity group-has-[:checked]:opacity-100"></span>
+        </span>
+        <span class="min-w-0 flex-1">
+          <span class="block text-base font-semibold leading-tight">Trenches Pass</span>
+          <span class="mt-1 block text-sm text-slate-500 dark:text-slate-400">1 Month Free Access</span>
+        </span>
+        <span class="text-base font-semibold text-slate-900 dark:text-slate-100">20 SOL</span>
+      </label>
+
+      <label class="group flex cursor-pointer items-center gap-3 rounded-[var(--radius-lg)] border border-slate-200 px-4 py-3 dark:border-slate-800 dark:bg-slate-950 has-[:checked]:border-[var(--ring)] has-[:checked]:bg-slate-50 dark:has-[:checked]:bg-sky-500/10 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[var(--ring-soft)]">
+        <input type="radio" name="header-pro-plan" value="based" class="peer sr-only" />
+        <span
+          aria-hidden="true"
+          class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-slate-400 bg-white peer-checked:border-[var(--ring)] dark:border-slate-600 dark:bg-slate-950"
+        >
+          <span class="h-2.5 w-2.5 rounded-full bg-[var(--ring)] opacity-0 transition-opacity group-has-[:checked]:opacity-100"></span>
+        </span>
+        <span class="min-w-0 flex-1">
+          <span class="block text-base font-semibold leading-tight">Based Pass</span>
+          <span class="mt-1 block text-sm text-slate-500 dark:text-slate-400">1 Year Free Access</span>
+        </span>
+        <span class="text-base font-semibold text-slate-900 dark:text-slate-100">75 SOL</span>
+      </label>
+    </fieldset>
+
+    <Button
+      id="header-pro-connect-wallet"
+      fullWidth
+      variant="primary"
+      class="h-12 bg-gradient-to-r from-blue-600 to-cyan-500 text-base font-semibold hover:brightness-105"
+    >
+      <Wallet class="h-4 w-4" aria-hidden="true" />
+      Connect Wallet
+    </Button>
+
+    <p class="rounded-[var(--radius-md)] bg-slate-100 px-4 py-3 text-sm text-slate-500 dark:bg-slate-900 dark:text-slate-400">
+      PRO does not include network transaction fees.
+    </p>
+  </div>
+</dialog>
+
 <script is:inline>
   const root = document.documentElement;
   const themeButton = document.getElementById("theme-toggle");
+  const mobileThemeButton = document.getElementById("mobile-theme-toggle");
   const darkIcon = document.getElementById("theme-toggle-icon-dark");
   const lightIcon = document.getElementById("theme-toggle-icon-light");
+  const mobileDarkIcon = document.getElementById("mobile-theme-toggle-icon-dark");
+  const mobileLightIcon = document.getElementById("mobile-theme-toggle-icon-light");
 
   const setThemeIcon = () => {
     const isDark = root.classList.contains("dark");
     darkIcon?.classList.toggle("hidden", !isDark);
     lightIcon?.classList.toggle("hidden", isDark);
+    mobileDarkIcon?.classList.toggle("hidden", !isDark);
+    mobileLightIcon?.classList.toggle("hidden", isDark);
   };
 
   setThemeIcon();
 
-  themeButton?.addEventListener("click", () => {
+  const toggleTheme = () => {
     const isDark = root.classList.toggle("dark");
     localStorage.setItem("theme", isDark ? "dark" : "light");
     setThemeIcon();
+  };
+
+  themeButton?.addEventListener("click", toggleTheme);
+  mobileThemeButton?.addEventListener("click", toggleTheme);
+
+</script>
+
+<script is:inline>
+  const HEADER_NETWORK_KEY = "solana-network";
+  const HEADER_PRIORITY_KEY = "solana-priority-fee";
+  const HEADER_JITO_KEY = "solana-jito-fee";
+
+  const networkPicker = document.getElementById("header-network-picker");
+  const networkTrigger = document.getElementById("header-network-trigger");
+  const networkMenu = document.getElementById("header-network-menu");
+  const networkCurrentLabel = document.getElementById("header-network-current-label");
+  const networkCurrentIcon = document.getElementById("header-network-current-icon");
+  const networkMainnetCheck = document.getElementById("header-network-check-mainnet");
+  const networkDevnetCheck = document.getElementById("header-network-check-devnet");
+  const mobileNetworkMainnetCheck = document.getElementById("mobile-network-check-mainnet");
+  const mobileNetworkDevnetCheck = document.getElementById("mobile-network-check-devnet");
+  const mobileNetworkMainnetUnchecked = document.getElementById("mobile-network-unchecked-mainnet");
+  const mobileNetworkDevnetUnchecked = document.getElementById("mobile-network-unchecked-devnet");
+  const mobileNetworkMainnetButton = document.getElementById("mobile-network-mainnet");
+  const mobileNetworkDevnetButton = document.getElementById("mobile-network-devnet");
+  const feesDialog = document.getElementById("header-fees-dialog");
+  const feesOpenButton = document.getElementById("header-fees-button");
+  const feesCloseButton = document.getElementById("header-fees-close");
+  const prioritySelect = document.getElementById("fees-priority-select");
+  const jitoSelect = document.getElementById("fees-jito-select");
+
+  const proDialog = document.getElementById("header-pro-dialog");
+  const proOpenButton = document.getElementById("header-pro-button");
+  const proCloseButton = document.getElementById("header-pro-close");
+  const mobileSettingsDialog = document.getElementById("mobile-header-settings-dialog");
+  const mobileSettingsOpenButton = document.getElementById("mobile-header-settings-button");
+  const mobileSettingsCloseButton = document.getElementById("mobile-header-settings-close");
+  const mobileOpenFeesButton = document.getElementById("mobile-open-fees-button");
+  const mobileOpenProButton = document.getElementById("mobile-open-pro-button");
+
+  const hydrateStoredValue = (element, key, fallback) => {
+    if (!(element instanceof HTMLSelectElement)) return fallback;
+    const storedValue = localStorage.getItem(key);
+    if (storedValue && [...element.options].some((option) => option.value === storedValue)) {
+      element.value = storedValue;
+      return storedValue;
+    }
+    element.value = fallback;
+    localStorage.setItem(key, fallback);
+    return fallback;
+  };
+
+  const getStoredNetwork = () => {
+    const value = localStorage.getItem(HEADER_NETWORK_KEY);
+    if (value === "mainnet" || value === "devnet") return value;
+    return "mainnet";
+  };
+
+  const closeNetworkMenu = () => {
+    if (!(networkMenu instanceof HTMLElement)) return;
+    if (!(networkTrigger instanceof HTMLButtonElement)) return;
+    networkMenu.classList.add("hidden");
+    networkTrigger.setAttribute("aria-expanded", "false");
+  };
+
+  const openNetworkMenu = () => {
+    if (!(networkMenu instanceof HTMLElement)) return;
+    if (!(networkTrigger instanceof HTMLButtonElement)) return;
+    networkMenu.classList.remove("hidden");
+    networkTrigger.setAttribute("aria-expanded", "true");
+  };
+
+  const setNetwork = (network) => {
+    const value = network === "devnet" ? "devnet" : "mainnet";
+    document.documentElement.setAttribute("data-network", value);
+    localStorage.setItem(HEADER_NETWORK_KEY, value);
+
+    if (networkCurrentLabel instanceof HTMLElement) {
+      networkCurrentLabel.textContent = value === "devnet" ? "Devnet" : "Mainnet";
+    }
+
+    if (networkCurrentIcon instanceof HTMLElement) {
+      networkCurrentIcon.innerHTML =
+        value === "devnet"
+          ? '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 text-amber-500 dark:text-amber-400"><path d="M13 2 4 14h7l-1 8 10-13h-7z"/></svg>'
+          : '<span class="inline-flex h-4 w-4 items-center justify-center rounded-full border-2 border-emerald-400 bg-emerald-500/15 dark:border-emerald-300 dark:bg-emerald-400/20"><span class="h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-emerald-300"></span></span>';
+    }
+
+    const networkOptions = document.querySelectorAll("[data-network-option]");
+    networkOptions.forEach((option) => {
+      if (!(option instanceof HTMLButtonElement)) return;
+      const isSelected = option.dataset.networkOption === value;
+      option.setAttribute("aria-checked", isSelected ? "true" : "false");
+      option.classList.toggle("!bg-slate-100", isSelected);
+      option.classList.toggle("dark:!bg-sky-500/15", isSelected);
+      option.classList.toggle("dark:!text-sky-200", isSelected);
+      option.classList.toggle("dark:!text-slate-100", !isSelected);
+    });
+
+    networkMainnetCheck?.classList.toggle("hidden", value !== "mainnet");
+    networkDevnetCheck?.classList.toggle("hidden", value !== "devnet");
+    mobileNetworkMainnetCheck?.classList.toggle("hidden", value !== "mainnet");
+    mobileNetworkDevnetCheck?.classList.toggle("hidden", value !== "devnet");
+    mobileNetworkMainnetUnchecked?.classList.toggle("hidden", value === "mainnet");
+    mobileNetworkDevnetUnchecked?.classList.toggle("hidden", value === "devnet");
+    mobileNetworkMainnetButton?.classList.toggle("border-blue-400", value === "mainnet");
+    mobileNetworkMainnetButton?.classList.toggle("bg-blue-50/80", value === "mainnet");
+    mobileNetworkMainnetButton?.classList.toggle("dark:border-sky-400/70", value === "mainnet");
+    mobileNetworkMainnetButton?.classList.toggle("dark:bg-sky-500/15", value === "mainnet");
+    mobileNetworkDevnetButton?.classList.toggle("border-blue-400", value === "devnet");
+    mobileNetworkDevnetButton?.classList.toggle("bg-blue-50/80", value === "devnet");
+    mobileNetworkDevnetButton?.classList.toggle("dark:border-sky-400/70", value === "devnet");
+    mobileNetworkDevnetButton?.classList.toggle("dark:bg-sky-500/15", value === "devnet");
+  };
+
+  const initialNetwork = getStoredNetwork();
+  setNetwork(initialNetwork);
+
+  networkTrigger?.addEventListener("click", () => {
+    if (!(networkMenu instanceof HTMLElement)) return;
+    const isOpen = !networkMenu.classList.contains("hidden");
+    if (isOpen) {
+      closeNetworkMenu();
+    } else {
+      openNetworkMenu();
+    }
   });
 
+  document.querySelectorAll("[data-network-option]").forEach((option) => {
+    option.addEventListener("click", () => {
+      if (!(option instanceof HTMLButtonElement)) return;
+      const next = option.dataset.networkOption === "devnet" ? "devnet" : "mainnet";
+      setNetwork(next);
+      closeNetworkMenu();
+    });
+  });
+
+  mobileNetworkMainnetButton?.addEventListener("click", () => setNetwork("mainnet"));
+  mobileNetworkDevnetButton?.addEventListener("click", () => setNetwork("devnet"));
+
+  document.addEventListener("click", (event) => {
+    if (!(networkPicker instanceof HTMLElement)) return;
+    if (!networkPicker.contains(event.target)) {
+      closeNetworkMenu();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeNetworkMenu();
+    }
+  });
+
+  if (prioritySelect instanceof HTMLSelectElement) {
+    hydrateStoredValue(prioritySelect, HEADER_PRIORITY_KEY, "normal");
+    prioritySelect.addEventListener("change", () => {
+      localStorage.setItem(HEADER_PRIORITY_KEY, prioritySelect.value);
+    });
+  }
+
+  if (jitoSelect instanceof HTMLSelectElement) {
+    hydrateStoredValue(jitoSelect, HEADER_JITO_KEY, "5x");
+    jitoSelect.addEventListener("change", () => {
+      localStorage.setItem(HEADER_JITO_KEY, jitoSelect.value);
+    });
+  }
+
+  const openDialog = (dialogElement) => {
+    if (dialogElement instanceof HTMLDialogElement) {
+      dialogElement.showModal();
+    }
+  };
+
+  const closeDialog = (dialogElement) => {
+    if (dialogElement instanceof HTMLDialogElement && dialogElement.open) {
+      dialogElement.close();
+    }
+  };
+
+  feesOpenButton?.addEventListener("click", () => openDialog(feesDialog));
+  feesCloseButton?.addEventListener("click", () => closeDialog(feesDialog));
+  feesDialog?.addEventListener("click", (event) => {
+    if (event.target === feesDialog) {
+      closeDialog(feesDialog);
+    }
+  });
+
+  proOpenButton?.addEventListener("click", () => openDialog(proDialog));
+  proCloseButton?.addEventListener("click", () => closeDialog(proDialog));
+  proDialog?.addEventListener("click", (event) => {
+    if (event.target === proDialog) {
+      closeDialog(proDialog);
+    }
+  });
+
+  mobileSettingsOpenButton?.addEventListener("click", () => openDialog(mobileSettingsDialog));
+  mobileSettingsCloseButton?.addEventListener("click", () => closeDialog(mobileSettingsDialog));
+  mobileSettingsDialog?.addEventListener("click", (event) => {
+    if (event.target === mobileSettingsDialog) {
+      closeDialog(mobileSettingsDialog);
+    }
+  });
+
+  mobileOpenFeesButton?.addEventListener("click", () => {
+    closeDialog(mobileSettingsDialog);
+    openDialog(feesDialog);
+  });
+
+  mobileOpenProButton?.addEventListener("click", () => {
+    closeDialog(mobileSettingsDialog);
+    openDialog(proDialog);
+  });
 </script>
 
 <script>
   const walletButton = document.getElementById("wallet-connect-button");
+  const walletButtonLabel = document.getElementById("wallet-connect-label");
+  const walletButtonIcon = document.getElementById("wallet-connect-icon");
   const WALLET_CACHE_KEY = "solana-wallet-address";
 
   const isLikelySolanaAddress = (value) => {
@@ -97,6 +670,7 @@ import Button from "../ui/Button.astro";
 
   const setWalletButtonState = (state, address) => {
     if (!(walletButton instanceof HTMLButtonElement)) return;
+    if (!(walletButtonLabel instanceof HTMLElement)) return;
 
     walletButton.dataset.walletState = state;
     if (state === "loading" || state === "verifying") {
@@ -106,19 +680,22 @@ import Button from "../ui/Button.astro";
     }
 
     if (state === "loading") {
-      walletButton.textContent = "Loading...";
+      walletButtonLabel.textContent = "Loading...";
+      walletButtonIcon?.classList.remove("hidden");
       walletButton.setAttribute("aria-label", "Loading Solana wallet");
       return;
     }
 
     if (address && isLikelySolanaAddress(address)) {
       const short = shortAddress(address);
-      walletButton.textContent = short;
+      walletButtonLabel.textContent = short;
+      walletButtonIcon?.classList.remove("hidden");
       walletButton.setAttribute("aria-label", `Connected Solana wallet ${short}`);
       return;
     }
 
-    walletButton.textContent = "Connect Wallet";
+    walletButtonLabel.textContent = "Connect Wallet";
+    walletButtonIcon?.classList.remove("hidden");
     walletButton.setAttribute("aria-label", "Connect Solana wallet");
   };
 

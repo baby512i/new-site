@@ -1,0 +1,93 @@
+---
+interface RadioOption {
+  label: string;
+  value: string;
+  description?: string;
+  disabled?: boolean;
+}
+
+interface Props {
+  name: string;
+  legend?: string;
+  options: RadioOption[];
+  value?: string;
+  required?: boolean;
+  disabled?: boolean;
+  describedBy?: string;
+  columns?: 1 | 2;
+  class?: string;
+  [key: string]: unknown;
+}
+
+const {
+  name,
+  legend,
+  options = [],
+  value,
+  required = false,
+  disabled = false,
+  describedBy,
+  columns = 1,
+  class: className = "",
+  ...rest
+} = Astro.props;
+
+const groupClass = [
+  "grid gap-3",
+  columns === 2 ? "md:grid-cols-2" : "",
+  className,
+]
+  .filter(Boolean)
+  .join(" ");
+---
+
+<fieldset
+  {...rest}
+  class="space-y-3 border-0 p-0 m-0 min-w-0"
+  aria-describedby={describedBy}
+  aria-required={required ? "true" : undefined}
+>
+  {legend ? <legend class="mb-1 text-sm font-medium text-[var(--foreground)]">{legend}</legend> : null}
+
+  <div class={groupClass} role="radiogroup" aria-label={legend}>
+    {
+      options.map((option, index) => {
+        const inputId = `${name}-${index}`;
+        const optionDisabled = disabled || Boolean(option.disabled);
+        const checked = value ? value === option.value : index === 0;
+
+        return (
+          <label
+            for={inputId}
+            class="group relative flex min-h-[var(--control-md)] cursor-pointer items-start gap-3 rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--card)] px-3 py-3 text-sm text-[var(--foreground)] transition-colors hover:border-[var(--border-strong)] has-[:checked]:border-[var(--ring)] has-[:checked]:bg-[var(--accent-soft)] has-[:focus-visible]:border-[var(--ring)] has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[var(--ring-soft)] has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-60"
+          >
+            <input
+              id={inputId}
+              type="radio"
+              name={name}
+              value={option.value}
+              checked={checked}
+              disabled={optionDisabled}
+              required={required}
+              class="peer sr-only"
+            />
+
+            <span
+              aria-hidden="true"
+              class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[var(--border-strong)] bg-[var(--card)] transition-colors peer-checked:border-[var(--ring)] peer-checked:bg-[var(--ring-soft)]"
+            >
+              <span class="h-2.5 w-2.5 rounded-full bg-[var(--ring)] opacity-0 transition-opacity peer-checked:opacity-100"></span>
+            </span>
+
+            <span class="flex min-w-0 flex-col">
+              <span class="font-medium">{option.label}</span>
+              {option.description ? (
+                <span class="text-xs leading-5 text-[var(--muted-foreground)]">{option.description}</span>
+              ) : null}
+            </span>
+          </label>
+        );
+      })
+    }
+  </div>
+</fieldset>
