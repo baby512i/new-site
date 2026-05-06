@@ -3,6 +3,7 @@ import { SolanaAdapter } from "@reown/appkit-adapter-solana";
 import { solana, solanaDevnet } from "@reown/appkit/networks";
 
 type AppKitInstance = ReturnType<typeof createAppKit>;
+type ThemeMode = "light" | "dark";
 
 export const SOLANA_NAMESPACE = "solana" as const;
 const SOLANA_WALLET_CACHE_KEY = "solana-wallet-address";
@@ -176,8 +177,37 @@ function getDefaultNetwork() {
   return solana;
 }
 
+function getSiteThemeMode(): ThemeMode {
+  if (typeof window === "undefined") {
+    return "light";
+  }
+
+  const saved = window.localStorage.getItem("theme");
+  if (saved === "dark" || saved === "light") {
+    return saved;
+  }
+
+  if (window.document.documentElement.classList.contains("dark")) {
+    return "dark";
+  }
+
+  return window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function syncAppKitThemeMode(modal: AppKitInstance) {
+  const themeMode = getSiteThemeMode();
+
+  const maybeSetThemeMode = (modal as unknown as { setThemeMode?: (mode: ThemeMode) => void })
+    .setThemeMode;
+
+  if (typeof maybeSetThemeMode === "function") {
+    maybeSetThemeMode(themeMode);
+  }
+}
+
 export function initReownAppKit() {
   if (appKit) {
+    syncAppKitThemeMode(appKit);
     return appKit;
   }
 
@@ -203,6 +233,7 @@ export function initReownAppKit() {
     enableReconnect: true,
     enableMobileFullScreen: true,
     enableWalletGuide: true,
+    themeMode: getSiteThemeMode(),
     features: {
       analytics: false,
       swaps: false,
@@ -211,38 +242,37 @@ export function initReownAppKit() {
       socials: [],
       connectMethodsOrder: ["wallet"],
     },
-    // themeVariables: {
-    //   "--apkt-accent": "#38bdf8",
-    //   "--apkt-color-mix": "#38bdf8",
-    //   "--apkt-color-mix-strength": 20,
-    //   "--apkt-border-radius-master": "12px",
-    //   "--apkt-z-index": 9999,
-    // },
+
   });
 
+  syncAppKitThemeMode(appKit);
   return appKit;
 }
 
 export async function openSolanaConnectModal() {
   const modal = initReownAppKit();
+  syncAppKitThemeMode(modal);
   await modal.ready();
   await modal.open({ view: "Connect", namespace: SOLANA_NAMESPACE });
 }
 
 export async function openSolanaAccountModal() {
   const modal = initReownAppKit();
+  syncAppKitThemeMode(modal);
   await modal.ready();
   await modal.open({ view: "Account" });
 }
 
 export async function openSolanaNetworkModal() {
   const modal = initReownAppKit();
+  syncAppKitThemeMode(modal);
   await modal.ready();
   await modal.open({ view: "Networks" });
 }
 
 export async function openSolanaWalletModal() {
   const modal = initReownAppKit();
+  syncAppKitThemeMode(modal);
 
   await modal.ready();
   // Ensure we read the *current* active wallet before selecting the view.
