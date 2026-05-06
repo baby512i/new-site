@@ -46,6 +46,7 @@ import { Menu, Moon, Sun } from "@lucide/astro";
         type="button"
         class="inline-flex min-h-11 items-center justify-center rounded-md border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 dark:hover:bg-slate-900 dark:focus-visible:outline-sky-400"
         aria-label="Connect Solana wallet"
+        data-wallet-state="disconnected"
       >
         Connect Wallet
       </button>
@@ -82,81 +83,249 @@ import { Menu, Moon, Sun } from "@lucide/astro";
   const walletButton = document.getElementById("wallet-connect-button");
   const WALLET_CACHE_KEY = "solana-wallet-address";
 
-  const shortAddress = (address) => `${address.slice(0, 4)}...${address.slice(-4)}`;
-  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-  let walletUnsubscribe = null;
+  const isLikelySolanaAddress = (value) => {
+    if (typeof value !== "string") return false;
+    if (value.length < 32 || value.length > 44) return false;
+    return /^[1-9A-HJ-NP-Za-km-z]+$/.test(value);
+  };
 
-  const setWalletButtonConnectedState = (address) => {
+  const shortAddress = (address) => `${address.slice(0, 4)}...${address.slice(-4)}`;
+
+  const setWalletButtonState = (state, address) => {
     if (!(walletButton instanceof HTMLButtonElement)) return;
 
-    if (!address) {
-      walletButton.textContent = "Connect Wallet";
-      walletButton.setAttribute("aria-label", "Connect Solana wallet");
+    walletButton.dataset.walletState = state;
+    if (state === "loading" || state === "verifying") {
+      walletButton.setAttribute("aria-busy", "true");
+    } else {
+      walletButton.removeAttribute("aria-busy");
+    }
+
+    if (state === "loading") {
+      walletButton.textContent = "Loading...";
+      walletButton.setAttribute("aria-label", "Loading Solana wallet");
       return;
     }
 
-    walletButton.textContent = shortAddress(address);
-    walletButton.setAttribute("aria-label", `Connected Solana wallet ${shortAddress(address)}`);
-  };
-
-  if (walletButton instanceof HTMLButtonElement) {
-    const cachedAddress = window.localStorage.getItem(WALLET_CACHE_KEY);
-    setWalletButtonConnectedState(cachedAddress);
-  }
-
-  const refreshWalletButtonState = async (walletModule, attempts = 8, waitMs = 250) => {
-    for (let index = 0; index < attempts; index += 1) {
-      const status = await walletModule.getSolanaWalletStatus();
-
-      if (status?.address) {
-        setWalletButtonConnectedState(status.address);
-        return;
-      }
-
-      if (index < attempts - 1) {
-        await delay(waitMs);
-      }
-    }
-
-    setWalletButtonConnectedState(null);
-  };
-
-  const ensureWalletSubscription = async (walletModule) => {
-    if (walletUnsubscribe) {
+    if (address && isLikelySolanaAddress(address)) {
+      const short = shortAddress(address);
+      walletButton.textContent = short;
+      walletButton.setAttribute("aria-label", `Connected Solana wallet ${short}`);
       return;
     }
 
-    walletUnsubscribe = await walletModule.subscribeSolanaWalletStatus((status) => {
-      setWalletButtonConnectedState(status?.address || null);
+    walletButton.textContent = "Connect Wallet";
+    walletButton.setAttribute("aria-label", "Connect Solana wallet");
+  };
+
+  // Dynamic import dedupe.
+  let walletModulePromise = null;
+  const loadWalletModule = () => {
+    if (!walletModulePromise) {
+      walletModulePromise = import("../../lib/wallet/reown-client");
+    }
+    return walletModulePromise;
+  };
+
+  let walletUnsubscribe = null;
+  let refreshIntervalId = null;
+  let reownLoaded = false;
+  let hasBoundVisibilityHandlers = false;
+  let isRefreshingWallet = false;
+
+  const clearRefreshLoop = () => {
+    if (refreshIntervalId) {
+      window.clearInterval(refreshIntervalId);
+      refreshIntervalId = null;
+    }
+  };
+
+  const refreshButtonOnce = async (wallet, maxMs = 1000) => {
+    if (!wallet) return;
+    if (isRefreshingWallet) return;
+
+    isRefreshingWallet = true;
+
+    try {
+      const status = await wallet.refreshSolanaWalletStatus(maxMs);
+      if (status?.isConnected && status?.address) {
+        setWalletButtonState("connected", status.address);
+      } else {
+        setWalletButtonState("disconnected", null);
+      }
+    } catch (error) {
+      console.debug("Wallet refresh error:", error);
+    } finally {
+      isRefreshingWallet = false;
+    }
+  };
+
+  const startTempRefreshLoop = async (wallet, maxAttempts = 12, everyMs = 400) => {
+    if (!wallet) return;
+    if (!reownLoaded) return;
+
+    clearRefreshLoop();
+
+    let attempts = 0;
+    refreshIntervalId = window.setInterval(async () => {
+      attempts += 1;
+      await refreshButtonOnce(wallet, 1000);
+
+      if (attempts >= maxAttempts) {
+        clearRefreshLoop();
+      }
+    }, everyMs);
+  };
+
+  const ensureWalletSubscription = async (wallet) => {
+    if (walletUnsubscribe) return;
+
+    walletUnsubscribe = await wallet.subscribeSolanaWalletStatus((status) => {
+      if (status?.isConnected && status?.address) {
+        setWalletButtonState("connected", status.address);
+      } else {
+        setWalletButtonState("disconnected", null);
+      }
+
+      // Phantom/Reown can lag — do a short follow-up refresh burst.
+      startTempRefreshLoop(wallet, 10, 350);
     });
   };
+
+  const bindPostLoadVisibilityHandlers = (wallet) => {
+    if (hasBoundVisibilityHandlers) return;
+    hasBoundVisibilityHandlers = true;
+
+    window.addEventListener("focus", () => {
+      if (!reownLoaded) return;
+      startTempRefreshLoop(wallet, 10, 400);
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (!reownLoaded) return;
+      if (document.visibilityState === "visible") {
+        startTempRefreshLoop(wallet, 10, 400);
+      }
+    });
+  };
+
+  const updateFromCache = () => {
+    if (!(walletButton instanceof HTMLButtonElement)) return;
+    const cached = window.localStorage.getItem(WALLET_CACHE_KEY);
+
+    if (cached && isLikelySolanaAddress(cached)) {
+      // Display cache immediately, but treat as unverified until Reown checks.
+      setWalletButtonState("verifying", cached);
+      return cached;
+    }
+
+    setWalletButtonState("disconnected", null);
+    return null;
+  };
+
+  const cachedAddress = updateFromCache();
+
+  // Cross-tab: keep the header button in sync.
+  window.addEventListener("storage", (event) => {
+    if (event.key !== WALLET_CACHE_KEY) return;
+    if (typeof event.newValue === "string" && isLikelySolanaAddress(event.newValue)) {
+      setWalletButtonState("verifying", event.newValue);
+      window.setTimeout(async () => {
+        try {
+          const wallet = await loadWalletModule();
+          reownLoaded = true;
+          await ensureWalletSubscription(wallet);
+          bindPostLoadVisibilityHandlers(wallet);
+          await refreshButtonOnce(wallet, 1000);
+        } catch {
+          // Keep cached verifying state if verification fails.
+        }
+      }, 600);
+    } else {
+      setWalletButtonState("disconnected", null);
+    }
+  });
+
+  // Returning users only: verify after idle (do not load Reown for first-time visitors).
+  const scheduleIdleVerification = () => {
+    if (!cachedAddress) return;
+
+    const run = async () => {
+      try {
+        const wallet = await loadWalletModule();
+        reownLoaded = true;
+
+        await ensureWalletSubscription(wallet);
+        bindPostLoadVisibilityHandlers(wallet);
+
+        const status = await wallet.refreshSolanaWalletStatus(2500);
+        if (status?.isConnected && status?.address) {
+          setWalletButtonState("connected", status.address);
+        } else {
+          setWalletButtonState("disconnected", null);
+        }
+      } catch (error) {
+        console.debug("Idle wallet verification failed:", error);
+        const cached = window.localStorage.getItem(WALLET_CACHE_KEY);
+        if (cached && isLikelySolanaAddress(cached)) {
+          setWalletButtonState("verifying", cached);
+        } else {
+          setWalletButtonState("disconnected", null);
+        }
+      }
+    };
+
+    if ("requestIdleCallback" in window) {
+      window.requestIdleCallback(run, { timeout: 1800 });
+    } else {
+      window.setTimeout(run, 900);
+    }
+  };
+
+  scheduleIdleVerification();
 
   walletButton?.addEventListener("click", async () => {
     if (!(walletButton instanceof HTMLButtonElement)) return;
 
-    const originalText = walletButton.textContent || "Connect Wallet";
-
     try {
       walletButton.disabled = true;
-      walletButton.textContent = "Loading Wallet...";
+      setWalletButtonState("loading", null);
 
-      const wallet = await import("../../lib/wallet/reown-client");
+      const wallet = await loadWalletModule();
+      reownLoaded = true;
+
+      // Subscriptions must start before any modal view opens.
       await ensureWalletSubscription(wallet);
-      await wallet.openSolanaWalletModal();
-      await refreshWalletButtonState(wallet);
+      bindPostLoadVisibilityHandlers(wallet);
+
+      // Force-refresh so we don't open the wrong view with stale state.
+      const status = await wallet.refreshSolanaWalletStatus(2500);
+
+      if (status?.isConnected && status?.address) {
+        setWalletButtonState("connected", status.address);
+        await wallet.openSolanaAccountModal();
+      } else {
+        setWalletButtonState("disconnected", null);
+        await wallet.openSolanaConnectModal();
+      }
+
+      // Catch delayed Phantom/Reown updates after open/close/connect flows.
+      await refreshButtonOnce(wallet, 1000);
+      startTempRefreshLoop(wallet, 12, 400);
     } catch (error) {
       console.error("Failed to open Solana wallet modal:", error);
-      walletButton.textContent = "Wallet Error";
-
+      setWalletButtonState("error", null);
       window.setTimeout(() => {
-        walletButton.textContent = originalText;
-      }, 1800);
+        // Return to cached display if it exists; otherwise default.
+        const cached = window.localStorage.getItem(WALLET_CACHE_KEY);
+        if (cached && isLikelySolanaAddress(cached)) {
+          setWalletButtonState("verifying", cached);
+        } else {
+          setWalletButtonState("disconnected", null);
+        }
+      }, 1500);
     } finally {
       walletButton.disabled = false;
-
-      if (walletButton.textContent === "Loading Wallet...") {
-        walletButton.textContent = originalText;
-      }
     }
   });
 </script>

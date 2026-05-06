@@ -1,42 +1,33 @@
-import { createAppKit } from "@reown/appkit/react";
-import { SolanaAdapter } from "@reown/appkit-adapter-solana/react";
+import { createAppKit } from "@reown/appkit";
+import { SolanaAdapter } from "@reown/appkit-adapter-solana";
 import { solana, solanaDevnet } from "@reown/appkit/networks";
 
 type AppKitInstance = ReturnType<typeof createAppKit>;
 
-let appKit: AppKitInstance | null = null;
-
-const SOLANA_NAMESPACE = "solana" as const;
+export const SOLANA_NAMESPACE = "solana" as const;
 const SOLANA_WALLET_CACHE_KEY = "solana-wallet-address";
+
+let appKit: AppKitInstance | null = null;
 
 /** Explicit tuple keeps AppKit network typing happy. */
 const networks = [solana, solanaDevnet] as [typeof solana, typeof solanaDevnet];
 
+type SolanaWalletStatus = {
+  isConnected: boolean;
+  address?: string;
+  shortAddress?: string;
+};
+
 function delay(ms: number) {
-  return new Promise<void>((resolve) => {
-    setTimeout(resolve, ms);
-  });
+  return new Promise<void>((resolve) => setTimeout(resolve, ms));
 }
 
-function hasSolanaSession(modal: AppKitInstance) {
-  const account = modal.getAccount(SOLANA_NAMESPACE);
-  const address = modal.getAddressByChainNamespace(SOLANA_NAMESPACE);
-
-  return account?.isConnected === true && Boolean(address);
-}
-
-function getSolanaAddress(modal: AppKitInstance) {
-  return modal.getAddressByChainNamespace(SOLANA_NAMESPACE);
-}
-
-function shortAddress(address: string) {
+export function shortAddress(address: string) {
   return `${address.slice(0, 4)}...${address.slice(-4)}`;
 }
 
-function cacheAddress(address: string | null) {
-  if (typeof window === "undefined") {
-    return;
-  }
+export function cacheAddress(address: string | null) {
+  if (typeof window === "undefined") return;
 
   if (!address) {
     window.localStorage.removeItem(SOLANA_WALLET_CACHE_KEY);
@@ -46,28 +37,109 @@ function cacheAddress(address: string | null) {
   window.localStorage.setItem(SOLANA_WALLET_CACHE_KEY, address);
 }
 
+export function getCachedSolanaWalletAddress() {
+  if (typeof window === "undefined") return null;
+  return window.localStorage.getItem(SOLANA_WALLET_CACHE_KEY);
+}
+
+function hasSolanaSession(modal: AppKitInstance) {
+  const account = modal.getAccount(SOLANA_NAMESPACE);
+  const address = getSolanaAddress(modal);
+  return account?.isConnected === true && Boolean(address);
+}
+
 /**
- * After reload, AppKit may still be reconnecting. Wait until that settles so we
- * don't open `Account` while disconnected (that shows the wrong / mini UI).
+ * Resolve the *active* current Solana address.
+ * Do NOT prefer `allAccounts.find(...)` because array order can contain stale entries.
  */
-async function settleSolanaReconnect(modal: AppKitInstance, maxMs = 3000) {
+export function getSolanaAddress(modal: AppKitInstance) {
+  const directAddress = modal.getAddressByChainNamespace(SOLANA_NAMESPACE);
+  if (directAddress) return directAddress;
+
+  const account = modal.getAccount(SOLANA_NAMESPACE);
+
+  const caip = account?.caipAddress;
+  if (typeof caip === "string" && caip.startsWith(`${SOLANA_NAMESPACE}:`)) {
+    const tail = caip.split(":").pop();
+    if (tail) return tail;
+  }
+
+  const solanaAccounts = account?.allAccounts?.filter(
+    (entry) => entry.namespace === SOLANA_NAMESPACE && entry.address,
+  );
+
+  return solanaAccounts?.at(-1)?.address;
+}
+
+function readSolanaWalletStatus(modal: AppKitInstance): SolanaWalletStatus {
+  const connected = hasSolanaSession(modal);
+  const address = connected ? getSolanaAddress(modal) : undefined;
+
+  cacheAddress(address || null);
+
+  return {
+    isConnected: connected,
+    address,
+    shortAddress: address ? shortAddress(address) : undefined,
+  };
+}
+
+function isAccountPossiblyConnecting(modal: AppKitInstance) {
+  const account = modal.getAccount(SOLANA_NAMESPACE);
+  const status = account?.status;
+  return status === "connecting" || status === "reconnecting";
+}
+
+export async function getSolanaWalletStatus(): Promise<SolanaWalletStatus> {
+  const modal = initReownAppKit();
+  await modal.ready();
+  return readSolanaWalletStatus(modal);
+}
+
+export async function waitForSolanaWalletStatus(maxMs = 3000): Promise<SolanaWalletStatus> {
+  const modal = initReownAppKit();
+  await modal.ready();
+
+  const first = readSolanaWalletStatus(modal);
+
+  // If clearly disconnected and not reconnecting, don't wait.
+  if (!first.isConnected && !isAccountPossiblyConnecting(modal)) {
+    return first;
+  }
+
   const deadline = Date.now() + maxMs;
+  let lastAddress = first.address;
+  let stableCount = 0;
 
   while (Date.now() < deadline) {
-    if (hasSolanaSession(modal)) {
-      return;
+    await delay(120);
+    const next = readSolanaWalletStatus(modal);
+
+    // If we're disconnected and not trying to reconnect, exit quickly.
+    if (!next.isConnected && !isAccountPossiblyConnecting(modal)) {
+      return next;
     }
 
-    const account = modal.getAccount(SOLANA_NAMESPACE);
-    const status = account?.status;
-
-    if (status === "reconnecting" || status === "connecting") {
-      await delay(50);
-      continue;
+    // Address stability: require two consecutive identical reads once connected.
+    if (next.isConnected && next.address) {
+      if (next.address === lastAddress) {
+        stableCount += 1;
+        if (stableCount >= 2) return next;
+      } else {
+        lastAddress = next.address;
+        stableCount = 0;
+      }
+    } else {
+      stableCount = 0;
+      lastAddress = next.address;
     }
-
-    return;
   }
+
+  return readSolanaWalletStatus(modal);
+}
+
+export async function refreshSolanaWalletStatus(maxMs = 3000): Promise<SolanaWalletStatus> {
+  return await waitForSolanaWalletStatus(maxMs);
 }
 
 function getProjectId() {
@@ -153,101 +225,84 @@ export function initReownAppKit() {
 
 export async function openSolanaConnectModal() {
   const modal = initReownAppKit();
+  await modal.ready();
+  await modal.open({ view: "Connect", namespace: SOLANA_NAMESPACE });
+}
 
-  await modal.open({
-    view: "Connect",
-    namespace: "solana",
-  });
+export async function openSolanaAccountModal() {
+  const modal = initReownAppKit();
+  await modal.ready();
+  await modal.open({ view: "Account" });
+}
+
+export async function openSolanaNetworkModal() {
+  const modal = initReownAppKit();
+  await modal.ready();
+  await modal.open({ view: "Networks" });
 }
 
 export async function openSolanaWalletModal() {
   const modal = initReownAppKit();
 
   await modal.ready();
-  await settleSolanaReconnect(modal);
+  // Ensure we read the *current* active wallet before selecting the view.
+  const status = await refreshSolanaWalletStatus(2500);
 
-  if (hasSolanaSession(modal)) {
+  if (status.isConnected) {
     await modal.open({ view: "Account" });
-    cacheAddress(getSolanaAddress(modal) || null);
     return;
   }
 
-  await modal.open({
-    view: "Connect",
-    namespace: SOLANA_NAMESPACE,
-  });
-
-  cacheAddress(hasSolanaSession(modal) ? getSolanaAddress(modal) || null : null);
+  await modal.open({ view: "Connect", namespace: SOLANA_NAMESPACE });
 }
-
-export async function getSolanaWalletStatus() {
-  const modal = initReownAppKit();
-
-  await modal.ready();
-  await settleSolanaReconnect(modal);
-
-  const connected = hasSolanaSession(modal);
-  const address = connected ? getSolanaAddress(modal) : undefined;
-
-  cacheAddress(address || null);
-
-  return {
-    isConnected: connected,
-    address,
-    shortAddress: address ? shortAddress(address) : undefined,
-  };
-}
-
-type SolanaWalletStatus = {
-  isConnected: boolean;
-  address?: string;
-  shortAddress?: string;
-};
 
 export async function subscribeSolanaWalletStatus(onChange: (status: SolanaWalletStatus) => void) {
   const modal = initReownAppKit();
+  await modal.ready();
 
-  const emitStatus = () => {
-    const connected = hasSolanaSession(modal);
-    const address = connected ? getSolanaAddress(modal) : undefined;
-
-    cacheAddress(address || null);
-
-    onChange({
-      isConnected: connected,
-      address,
-      shortAddress: address ? shortAddress(address) : undefined,
-    });
+  const emit = () => {
+    onChange(readSolanaWalletStatus(modal));
   };
 
-  await modal.ready();
-  emitStatus();
+  emit();
 
-  return modal.subscribeAccount(() => {
-    emitStatus();
-  }, SOLANA_NAMESPACE);
-}
+  const unsubs: Array<() => void> = [];
 
-export function getCachedSolanaWalletAddress() {
-  if (typeof window === "undefined") {
-    return null;
-  }
+  const maybeSubscribe = (fn: unknown, subscribe: () => unknown) => {
+    if (typeof fn !== "function") return;
 
-  return window.localStorage.getItem(SOLANA_WALLET_CACHE_KEY);
-}
+    try {
+      const unsub = subscribe();
 
-export async function openSolanaAccountModal() {
-  const modal = initReownAppKit();
+      if (typeof unsub === "function") {
+        unsubs.push(unsub as () => void);
+      }
+    } catch {
+      // Optional AppKit APIs differ by version.
+    }
+  };
 
-  await modal.open({
-    view: "Account",
-  });
-}
+  const anyModal = modal as unknown as Record<string, unknown>;
 
-export async function openSolanaNetworkModal() {
-  const modal = initReownAppKit();
+  maybeSubscribe(anyModal.subscribeAccount, () =>
+    (modal as any).subscribeAccount(() => emit(), SOLANA_NAMESPACE),
+  );
 
-  await modal.open({
-    view: "Networks",
-  });
+  maybeSubscribe(anyModal.subscribeWalletInfo, () =>
+    (modal as any).subscribeWalletInfo(() => emit()),
+  );
+
+  maybeSubscribe(anyModal.subscribeProviders, () =>
+    (modal as any).subscribeProviders(() => emit()),
+  );
+
+  return () => {
+    for (const unsub of unsubs) {
+      try {
+        unsub();
+      } catch {
+        // ignore unsubscribe errors
+      }
+    }
+  };
 }
