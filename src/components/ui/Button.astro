@@ -1,0 +1,101 @@
+---
+type ButtonVariant =
+  | "primary"
+  | "secondary"
+  | "outline"
+  | "ghost"
+  | "danger"
+  | "soft";
+
+type ButtonSize = "sm" | "md" | "lg" | "icon";
+
+interface Props {
+  href?: string;
+  type?: "button" | "submit" | "reset";
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  disabled?: boolean;
+  fullWidth?: boolean;
+  external?: boolean;
+  class?: string;
+  ariaLabel?: string;
+  [key: string]: unknown;
+}
+
+const {
+  href,
+  type = "button",
+  variant = "primary",
+  size = "md",
+  disabled = false,
+  fullWidth = false,
+  external = false,
+  class: className = "",
+  ariaLabel,
+  ...rest
+} = Astro.props;
+
+const baseClass =
+  "inline-flex items-center justify-center gap-2 rounded-[var(--radius-md)] border border-transparent font-semibold transition-colors focus-visible:outline-none focus-visible:border-[var(--ring)] focus-visible:ring-2 focus-visible:ring-[var(--ring-soft)] disabled:pointer-events-none disabled:opacity-55";
+
+const variantClasses: Record<ButtonVariant, string> = {
+  primary:
+    "bg-[var(--primary)] text-[var(--primary-foreground)] hover:bg-[var(--primary-hover)]",
+  secondary:
+    "bg-[var(--secondary)] text-white hover:bg-[var(--secondary-hover)]",
+  outline:
+    "border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] hover:border-[var(--border-strong)] hover:bg-[var(--muted)]",
+  ghost:
+    "text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[var(--foreground)]",
+  danger:
+    "bg-[var(--danger)] text-white hover:brightness-95",
+  soft:
+    "bg-[var(--accent-soft)] text-[var(--foreground)] hover:brightness-95",
+};
+
+const sizeClasses: Record<ButtonSize, string> = {
+  sm: "min-h-[var(--control-sm)] px-3 text-xs",
+  md: "min-h-[var(--control-md)] px-4 text-sm",
+  lg: "min-h-[var(--control-lg)] px-5 text-base",
+  icon: "h-[var(--control-md)] w-[var(--control-md)] p-0",
+};
+
+const finalClass = [
+  baseClass,
+  variantClasses[variant],
+  sizeClasses[size],
+  fullWidth ? "w-full" : "",
+  className,
+]
+  .filter(Boolean)
+  .join(" ");
+
+const rel = external ? "noopener noreferrer" : undefined;
+const target = external ? "_blank" : undefined;
+---
+
+{
+  href ? (
+    <a
+      {...rest}
+      href={disabled ? undefined : href}
+      class={finalClass}
+      aria-label={ariaLabel}
+      aria-disabled={disabled ? "true" : undefined}
+      rel={rel}
+      target={target}
+    >
+      <slot />
+    </a>
+  ) : (
+    <button
+      {...rest}
+      type={type}
+      class={finalClass}
+      disabled={disabled}
+      aria-label={ariaLabel}
+    >
+      <slot />
+    </button>
+  )
+}

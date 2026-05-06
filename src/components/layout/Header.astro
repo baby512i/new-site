@@ -1,20 +1,24 @@
 ---
 import { Menu, Moon, Sun } from "@lucide/astro";
+import Button from "../ui/Button.astro";
+
 ---
 
 <header class="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur dark:border-slate-800 dark:bg-slate-950/95">
   <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
     <div class="flex items-center gap-2">
-      <button
+      <Button
         id="mobile-sidebar-button"
         type="button"
-        class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 lg:hidden dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 dark:hover:bg-slate-900 dark:focus-visible:outline-sky-400"
+        variant="outline"
+        size="icon"
+        class="lg:hidden"
         aria-label="Toggle sidebar"
         aria-expanded="false"
         aria-controls="app-sidebar"
       >
         <Menu class="h-5 w-5" aria-hidden="true" />
-      </button>
+      </Button>
 
       <a
         href="/"
@@ -27,10 +31,11 @@ import { Menu, Moon, Sun } from "@lucide/astro";
     </div>
 
     <div class="flex items-center gap-2">
-          <button
+          <Button
         id="theme-toggle"
         type="button"
-        class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 dark:hover:bg-slate-900 dark:focus-visible:outline-sky-400"
+        variant="outline"
+        size="icon"
         aria-label="Toggle color theme"
       >
         <span id="theme-toggle-icon-dark" class="hidden" aria-hidden="true">
@@ -39,17 +44,16 @@ import { Menu, Moon, Sun } from "@lucide/astro";
         <span id="theme-toggle-icon-light" aria-hidden="true">
           <Moon class="h-5 w-5" aria-hidden="true" />
         </span>
-      </button>
+      </Button>
       
-      <button
-        id="wallet-connect-button"
-        type="button"
-        class="inline-flex min-h-11 items-center justify-center rounded-md border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 dark:hover:bg-slate-900 dark:focus-visible:outline-sky-400"
-        aria-label="Connect Solana wallet"
-        data-wallet-state="disconnected"
-      >
-        Connect Wallet
-      </button>
+<Button
+  id="wallet-connect-button"
+  variant="primary"
+  data-wallet-state="disconnected"
+  ariaLabel="Connect Solana wallet"
+>
+  Connect Wallet
+</Button>
 
 
 

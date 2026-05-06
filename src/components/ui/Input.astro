@@ -1,0 +1,44 @@
+---
+interface Props {
+  id?: string;
+  name?: string;
+  type?: string;
+  value?: string | number;
+  placeholder?: string;
+  disabled?: boolean;
+  required?: boolean;
+  invalid?: boolean;
+  describedBy?: string;
+  class?: string;
+  [key: string]: unknown;
+}
+
+const {
+  type = "text",
+  disabled = false,
+  required = false,
+  invalid = false,
+  describedBy,
+  class: className = "",
+  ...rest
+} = Astro.props;
+
+const baseClass =
+  "w-full min-h-[var(--control-md)] rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--card)] px-3 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] transition-colors focus-visible:outline-none focus-visible:border-[var(--ring)] focus-visible:ring-2 focus-visible:ring-[var(--ring-soft)] disabled:cursor-not-allowed disabled:opacity-60";
+
+const invalidClass = invalid
+  ? "border-[var(--danger)] focus-visible:border-[var(--danger)] focus-visible:ring-[var(--ring-soft)]"
+  : "";
+
+const finalClass = [baseClass, invalidClass, className].filter(Boolean).join(" ");
+---
+
+<input
+  {...rest}
+  type={type}
+  class={finalClass}
+  disabled={disabled}
+  required={required}
+  aria-invalid={invalid ? "true" : undefined}
+  aria-describedby={describedBy}
+/>

@@ -1,0 +1,54 @@
+---
+type CardTone = "default" | "muted";
+type CardSize = "sm" | "md" | "panel";
+
+interface Props {
+  as?: "article" | "section" | "div";
+  tone?: CardTone;
+  size?: CardSize;
+  class?: string;
+  [key: string]: unknown;
+}
+
+const {
+  as = "article",
+  tone = "default",
+  size = "md",
+  class: className = "",
+  ...rest
+} = Astro.props;
+
+const baseClass =
+  "border border-[var(--border-muted)] bg-[var(--card)] text-[var(--card-foreground)]";
+
+const toneClasses: Record<CardTone, string> = {
+  default: "",
+  muted: "bg-[var(--muted)]",
+};
+
+const sizeClasses: Record<CardSize, string> = {
+  sm: "rounded-[var(--radius-lg)] p-4 md:p-5",
+  md: "rounded-[var(--radius-xl)] p-4 md:p-6",
+  panel: "rounded-[var(--radius-2xl)] p-4 md:p-6",
+};
+
+const finalClass = [baseClass, toneClasses[tone], sizeClasses[size], className]
+  .filter(Boolean)
+  .join(" ");
+---
+
+{
+  as === "section" ? (
+    <section {...rest} class={finalClass}>
+      <slot />
+    </section>
+  ) : as === "div" ? (
+    <div {...rest} class={finalClass}>
+      <slot />
+    </div>
+  ) : (
+    <article {...rest} class={finalClass}>
+      <slot />
+    </article>
+  )
+}
