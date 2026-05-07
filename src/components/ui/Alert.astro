@@ -20,9 +20,9 @@ const baseClass =
 
 const toneClasses: Record<AlertTone, string> = {
   info: "border-[var(--border-strong)] bg-[var(--card)] text-[var(--foreground)]",
-  warning: "border-[var(--warning)] bg-[var(--card)] text-[var(--foreground)]",
-  danger: "border-[var(--danger)] bg-[var(--card)] text-[var(--foreground)]",
-  success: "border-[var(--success)] bg-[var(--card)] text-[var(--foreground)]",
+  warning: "border-[var(--color-warning-border)] bg-[var(--color-warning-soft)] text-[var(--color-warning-text)]",
+  danger: "border-[var(--color-danger-border)] bg-[var(--color-danger-soft)] text-[var(--color-danger-text)]",
+  success: "border-[var(--color-success-border)] bg-[var(--color-success-soft)] text-[var(--color-success-text)]",
 };
 
 const finalClass = [baseClass, toneClasses[tone], className].filter(Boolean).join(" ");

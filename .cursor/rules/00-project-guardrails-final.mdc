@@ -489,6 +489,72 @@ Preferred pattern:
 }
 ```
 
+## No Raw Tailwind Palette Rule
+
+No raw Tailwind palette classes are allowed in layout, pages, or shared UI.
+
+Do not use:
+
+- `slate-*`
+- `blue-*`
+- `sky-*`
+- `violet-*`
+- `red-*`
+- `white`
+- `black`
+
+directly in production layout/page/shared UI classes.
+
+Allowed exceptions:
+
+1. brand SVG/icon assets
+2. transparent overlays such as `backdrop:bg-black/40`
+3. temporary prototypes only, never production
+
+Use CSS variables from `src/styles/tokens.css` instead.
+
+Network state indicators must also use tokens.
+
+Do not use direct `emerald-*` or `amber-*` classes in layout/pages/shared UI.
+
+Use these tokens:
+
+- `--color-network-mainnet`
+- `--color-network-mainnet-soft`
+- `--color-network-mainnet-border`
+- `--color-network-devnet`
+- `--color-network-devnet-soft`
+- `--color-network-devnet-border`
+
+---
+
+## Background Orb Token Rule
+
+Decorative background gradients in layout must be token-driven and centralized.
+
+Do not inline raw `rgba(...)` gradients in `BaseLayout` or page-level shell wrappers.
+
+Use tokens such as:
+
+- `--color-bg-orb-brand`
+- `--color-bg-orb-pro`
+
+And apply them through shared CSS classes (for example, `.app-background`) in global styles.
+
+---
+
+## Alias Token Mapping Rule
+
+Alias variables in `global.css` must map to semantic tokens from `tokens.css`.
+
+Prefer:
+
+- `--secondary: var(--color-pro)`
+- `--secondary-hover: var(--color-pro-hover)`
+- `--accent: var(--color-brand)`
+
+Do not reintroduce raw hex values for these aliases unless explicitly requested.
+
 ---
 
 ## Layout Sizing
@@ -631,6 +697,42 @@ Avoid:
 - decorative uppercase everywhere
 
 Important instructions must not rely on low-contrast muted text.
+
+Typography scale tokens must be defined in `tokens.css` and treated as shared defaults:
+
+- `--text-caption`
+- `--text-body-sm`
+- `--text-body`
+- `--text-title-sm`
+- `--text-title`
+- `--text-heading`
+- `--leading-caption`
+- `--leading-body`
+- `--leading-title`
+
+Global body font must come from tokenized font family (`var(--font-sans)`).
+
+Avoid arbitrary text sizes unless a component-level reason exists.
+
+Use typography tokens or existing component patterns first.
+
+Before adding one-off text sizes (for example `text-[11px]`, `text-[13px]`, `text-[15px]`), prefer:
+
+1. existing semantic typography tokens in `tokens.css`
+2. existing shared component classes (such as dialog/body/helper styles)
+3. Tailwind standard scale classes already used consistently in the project
+
+If an arbitrary size is still required, keep it local to that component and document the reason in a short inline comment when the reason is not obvious.
+
+Component-level typography guardrails (strict defaults):
+
+- `text-[11px]`: only for micro labels (tiny metadata/chips/counters), never primary content
+- `text-[13px]`: only for compact helper text or dense submenu/supporting rows
+- `text-[15px]`: only for dialog/mobile row content where touch readability needs a slight bump
+- `text-sm`: default for controls, labels, and secondary UI text
+- `text-base`: default for primary body copy
+
+Do not introduce ad-hoc values such as `text-[14px]`, `text-[14.5px]`, `text-[17px]` unless explicitly requested or a clear component-specific constraint is documented.
 
 ---
 
@@ -1043,6 +1145,19 @@ Do not use a heavy dialog library for simple header/settings dialogs.
 
 Do not make every modal look like a separate product.
 
+Dialog implementations should use the shared shell/component approach.
+
+Preferred shared primitives:
+
+- `src/components/ui/DialogShell.astro`
+- `.dialog-sheet`
+- `.dialog-content`
+- `.dialog-title`
+- `.dialog-description`
+- `.dialog-action-list`
+
+When adding or updating dialogs, extend these shared primitives first instead of creating one-off modal structure/styles.
+
 ---
 
 ## Animation Rule
@@ -1216,21 +1331,16 @@ If a file becomes too large or mixes responsibilities, split it into focused fil
 
 The project must be clean-install safe.
 
-Before calling work complete:
-
-```bash
-npm run build
-```
 
 If dependencies or lockfile changed, also verify:
 
 ```bash
 rm -rf node_modules
-npm ci
+npm install
 npm run build
 ```
 
-If `npm ci` fails, fix `package-lock.json` with:
+If `npm install` fails, fix `package-lock.json` with:
 
 ```bash
 npm install
@@ -1328,3 +1438,16 @@ Not allowed:
 - static imports in Footer
 - static imports in BaseLayout
 - static imports in public static pages
+
+---
+
+## Final UI Polish Rules
+
+Apply these checks before marking layout/UI work complete:
+
+1. Replace all black backdrop utilities with semantic backdrop tokens.
+2. Add `title` and `aria-label` to collapsed sidebar category summaries.
+3. Do not introduce new raw Tailwind palette colors in layout, header, sidebar, footer, dialogs, or shared UI components.
+4. Do not introduce arbitrary text sizes unless they are added to typography tokens or documented inside the component.
+5. Reuse `DialogShell`, `Button`, `Card`, `Input`, `Alert`, and existing token patterns before creating one-off UI styles.
+6. Test header visually at `360px`, `850px`, `1024px`, and `1200px` before marking the layout complete.

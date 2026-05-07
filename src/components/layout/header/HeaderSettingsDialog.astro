@@ -1,17 +1,14 @@
 ---
 import { Check, ChevronDown, Circle, Moon, SlidersHorizontal, Sparkles, Sun, X, Zap } from "@lucide/astro";
 import Button from "../../ui/Button.astro";
+import DialogShell from "../../ui/DialogShell.astro";
 ---
 
-<dialog
-  id="mobile-header-settings-dialog"
-  class="dialog-panel fixed bottom-2 left-1/2 right-auto top-auto m-0 w-[min(34rem,calc(100vw-1rem))] -translate-x-1/2 translate-y-0 overflow-hidden p-0 backdrop:bg-black/40 backdrop:backdrop-blur-[1px] sm:top-1/2 sm:bottom-auto sm:-translate-y-1/2"
-  aria-labelledby="mobile-header-settings-title"
->
+<DialogShell id="mobile-header-settings-dialog" labelledBy="mobile-header-settings-title" widthClass="w-[min(34rem,calc(100vw-1rem))]">
   <div class="dialog-header px-5 pb-3.5 pt-3 sm:px-6 sm:pb-4">
     <div class="mx-auto mb-3 h-1 w-12 rounded-full bg-[var(--color-text-muted)]/40"></div>
     <div class="flex items-center justify-between gap-3">
-      <h2 id="mobile-header-settings-title" class="text-[1.2rem] font-semibold tracking-tight text-[var(--color-text)]">Header Settings</h2>
+      <h2 id="mobile-header-settings-title" class="dialog-title">Header Settings</h2>
       <button
         id="mobile-header-settings-close"
         type="button"
@@ -34,8 +31,9 @@ import Button from "../../ui/Button.astro";
           data-selected="true"
           class="flex min-h-12 items-center gap-3 rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-4 text-left text-[15px] font-medium text-[var(--color-text)] hover:bg-[var(--color-nav-hover)]"
         >
-          <span class="inline-flex h-4 w-4 items-center justify-center rounded-full border-2 border-emerald-400 bg-emerald-500/15 dark:border-emerald-300 dark:bg-emerald-400/20">
-            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-emerald-300"></span>
+          <!-- Intentional 15px: dialog/mobile row readability target. -->
+          <span class="inline-flex h-4 w-4 items-center justify-center rounded-full border-2 border-[var(--color-network-mainnet-border)] bg-[var(--color-network-mainnet-soft)]">
+            <span class="h-1.5 w-1.5 rounded-full bg-[var(--color-network-mainnet)]"></span>
           </span>
           <span class="flex-1 text-left">Mainnet</span>
           <Check id="mobile-network-check-mainnet" class="h-5 w-5 text-[var(--color-brand-text)]" aria-hidden="true" />
@@ -48,7 +46,8 @@ import Button from "../../ui/Button.astro";
           data-selected="false"
           class="flex min-h-12 items-center gap-3 rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-4 text-left text-[15px] font-medium text-[var(--color-text)] hover:bg-[var(--color-nav-hover)]"
         >
-          <Zap class="h-[18px] w-[18px] text-amber-500 dark:text-amber-400" aria-hidden="true" />
+          <!-- Intentional 15px: dialog/mobile row readability target. -->
+          <Zap class="h-[18px] w-[18px] text-[var(--color-network-devnet)]" aria-hidden="true" />
           <span class="flex-1 text-left">Devnet</span>
           <Check id="mobile-network-check-devnet" class="hidden h-5 w-5 text-[var(--color-brand-text)]" aria-hidden="true" />
           <Circle id="mobile-network-unchecked-devnet" class="h-5 w-5 text-[var(--color-text-muted)]" aria-hidden="true" />
@@ -65,6 +64,7 @@ import Button from "../../ui/Button.astro";
         fullWidth
         class="min-h-12 justify-between rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-4 text-[15px] font-medium text-[var(--color-text)] hover:bg-[var(--color-nav-hover)]"
       >
+        <!-- Intentional 15px: dialog/mobile row readability target. -->
         <span class="inline-flex items-center gap-3">
           <SlidersHorizontal class="h-[18px] w-[18px] text-[var(--color-brand-text)]" aria-hidden="true" />
           Fee Details
@@ -78,6 +78,7 @@ import Button from "../../ui/Button.astro";
         fullWidth
         class="min-h-12 justify-between rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-4 text-[15px] font-medium text-[var(--color-text)] hover:bg-[var(--color-nav-hover)]"
       >
+        <!-- Intentional 15px: dialog/mobile row readability target. -->
         <span class="inline-flex items-center gap-3">
           <Sparkles class="h-[18px] w-[18px] text-[var(--color-pro-text)]" aria-hidden="true" />
           PRO Plans
@@ -95,6 +96,7 @@ import Button from "../../ui/Button.astro";
         ariaLabel="Toggle color theme"
         class="min-h-12 justify-between rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-4 text-[15px] font-medium text-[var(--color-text)] hover:bg-[var(--color-nav-hover)]"
       >
+        <!-- Intentional 15px: dialog/mobile row readability target. -->
         <span class="inline-flex items-center gap-3">
           <span id="mobile-theme-toggle-icon-dark" class="hidden" aria-hidden="true">
             <Sun class="h-[18px] w-[18px] text-[var(--color-brand-text)]" aria-hidden="true" />
@@ -108,4 +110,4 @@ import Button from "../../ui/Button.astro";
       </Button>
     </section>
   </div>
-</dialog>
+</DialogShell>

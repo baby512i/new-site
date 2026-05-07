@@ -163,7 +163,7 @@ const homeActive = isActive("/");
   <button
     type="button"
     id="sidebar-backdrop"
-    class="fixed inset-x-0 bottom-0 top-[var(--header-height)] z-30 hidden bg-black/35 dark:bg-black/50 lg:hidden"
+    class="fixed inset-x-0 bottom-0 top-[var(--header-height)] z-30 hidden bg-[var(--color-sidebar-backdrop)] lg:hidden"
     aria-label="Close sidebar"
   />
 
@@ -261,6 +261,7 @@ const homeActive = isActive("/");
 
       <!-- Tool groups -->
       <div>
+        <!-- Intentional 11px: micro section label in dense sidebar navigation. -->
         <p class="sidebar-section-title mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--color-text-muted)]">
           Categories
         </p>
@@ -275,7 +276,11 @@ const homeActive = isActive("/");
                   class="group/details rounded-[var(--radius-xl)] border border-transparent open:border-[var(--color-brand-border)] open:bg-[var(--color-nav-active)]"
                   open={groupHasActive}
                 >
-                  <summary class="sidebar-category-summary flex h-10 cursor-pointer list-none items-center justify-between gap-2.5 rounded-[var(--radius-xl)] border border-transparent px-2.5 text-sm font-medium text-[var(--color-text-secondary)] hover:border-[var(--color-brand-border)] hover:bg-[var(--color-nav-hover)] hover:text-[var(--color-brand-text)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)]">
+                  <summary
+                    title={group.title}
+                    aria-label={group.title}
+                    class="sidebar-category-summary flex h-10 cursor-pointer list-none items-center justify-between gap-2.5 rounded-[var(--radius-xl)] border border-transparent px-2.5 text-sm font-medium text-[var(--color-text-secondary)] hover:border-[var(--color-brand-border)] hover:bg-[var(--color-nav-hover)] hover:text-[var(--color-brand-text)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)]"
+                  >
                     <span class="flex min-w-0 items-center gap-3">
                       <span class="grid h-[30px] w-[30px] shrink-0 place-items-center rounded-[var(--radius-md)] bg-[var(--color-surface-muted)] text-[var(--color-text-muted)] group-hover/details:bg-[var(--color-brand-soft)] group-hover/details:text-[var(--color-brand-text)]">
                         <group.icon class="h-5 w-5" aria-hidden="true" />
@@ -304,6 +309,7 @@ const homeActive = isActive("/");
                             title={item.label}
                             aria-current={subActive ? "page" : undefined}
                             class:list={[
+                              // Intentional 13px: compact dense submenu rows in sidebar.
                               "group/item flex min-h-[34px] items-center gap-2 rounded-[var(--radius-md)] px-2 py-1.5 text-[13px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)]",
                               subActive
                                 ? "border border-[var(--color-nav-active-border)] bg-[var(--color-nav-active)] font-medium text-[var(--color-nav-active-text)]"

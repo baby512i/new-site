@@ -1,20 +1,17 @@
 ---
 import { ChevronDown, CircleHelp, X } from "@lucide/astro";
+import DialogShell from "../../ui/DialogShell.astro";
 ---
 
-<dialog
-  id="header-fees-dialog"
-  class="dialog-panel fixed bottom-2 left-1/2 right-auto top-auto m-0 w-[min(35rem,calc(100vw-1rem))] -translate-x-1/2 translate-y-0 p-0 backdrop:bg-black/40 backdrop:backdrop-blur-[1px] sm:top-1/2 sm:bottom-auto sm:-translate-y-1/2"
-  aria-labelledby="header-fees-title"
->
+<DialogShell id="header-fees-dialog" labelledBy="header-fees-title" widthClass="w-[min(35rem,calc(100vw-1rem))]">
   <div class="dialog-header px-5 py-4 sm:px-6">
     <div class="mx-auto mb-3 h-1 w-12 rounded-full bg-[var(--color-text-muted)]/40 sm:hidden"></div>
     <div class="flex items-center justify-between gap-3">
       <div>
-        <h2 id="header-fees-title" class="text-[1.15rem] font-semibold leading-none tracking-tight text-[var(--color-text)]">
+        <h2 id="header-fees-title" class="dialog-title">
           Configuration
         </h2>
-        <p class="mt-1.5 text-[13px] leading-5 text-[var(--color-text-muted)]">
+        <p class="dialog-description">
           Adjust network and fee presets for faster transaction confirmation.
         </p>
       </div>
@@ -36,6 +33,7 @@ import { ChevronDown, CircleHelp, X } from "@lucide/astro";
         <CircleHelp class="h-4 w-4 text-[var(--color-text-muted)]" aria-label="Priority fee help" title="Priority fee affects transaction speed and cost." />
       </label>
       <div class="relative">
+        <!-- Intentional 15px: select rows in modal need stronger readability on mobile/desktop. -->
         <select
           id="fees-priority-select"
           class="h-[3.05rem] w-full appearance-none rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-4 pr-10 text-[15px] font-medium text-[var(--color-text)] outline-none focus:border-[var(--ring)] focus:ring-2 focus:ring-[var(--ring-soft)]"
@@ -58,6 +56,7 @@ import { ChevronDown, CircleHelp, X } from "@lucide/astro";
         <CircleHelp class="h-4 w-4 text-[var(--color-text-muted)]" aria-label="Jito tip help" title="Jito tip can improve inclusion priority." />
       </label>
       <div class="relative">
+        <!-- Intentional 15px: select rows in modal need stronger readability on mobile/desktop. -->
         <select
           id="fees-jito-select"
           class="h-[3.05rem] w-full appearance-none rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-4 pr-10 text-[15px] font-medium text-[var(--color-text)] outline-none focus:border-[var(--ring)] focus:ring-2 focus:ring-[var(--ring-soft)]"
@@ -74,4 +73,4 @@ import { ChevronDown, CircleHelp, X } from "@lucide/astro";
       </div>
     </div>
   </div>
-</dialog>
+</DialogShell>

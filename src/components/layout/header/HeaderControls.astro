@@ -14,10 +14,10 @@ import Button from "../../ui/Button.astro";
       class="inline-flex h-10 items-center gap-2 rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--card)] px-3 text-sm font-semibold text-[var(--foreground)] outline-none hover:bg-[var(--muted)] focus:border-[var(--ring)] focus:ring-2 focus:ring-[var(--ring-soft)] min-[1200px]:px-3.5"
     >
       <span id="header-network-current-icon" class="inline-flex" aria-hidden="true">
-        <span id="header-network-current-icon-mainnet" class="inline-flex h-5 w-5 items-center justify-center rounded-full border-2 border-emerald-400 bg-emerald-500/15 dark:border-emerald-300 dark:bg-emerald-400/20">
-          <span class="h-2 w-2 rounded-full bg-emerald-500 dark:bg-emerald-300"></span>
+        <span id="header-network-current-icon-mainnet" class="inline-flex h-5 w-5 items-center justify-center rounded-full border-2 border-[var(--color-network-mainnet-border)] bg-[var(--color-network-mainnet-soft)]">
+          <span class="h-2 w-2 rounded-full bg-[var(--color-network-mainnet)]"></span>
         </span>
-        <Zap id="header-network-current-icon-devnet" class="hidden h-5 w-5 text-amber-500 dark:text-amber-400" aria-hidden="true" />
+        <Zap id="header-network-current-icon-devnet" class="hidden h-5 w-5 text-[var(--color-network-devnet)]" aria-hidden="true" />
       </span>
       <span class="hidden min-[1024px]:inline">Network:</span>
       <span id="header-network-current-label">Mainnet</span>
@@ -38,8 +38,8 @@ import Button from "../../ui/Button.astro";
         data-selected="true"
         class="flex w-full items-center gap-3 rounded-[var(--radius-md)] border border-transparent px-3 py-3 text-left text-sm font-semibold text-[var(--foreground)] hover:bg-[var(--color-nav-hover)]"
       >
-        <span class="inline-flex h-4 w-4 items-center justify-center rounded-full border-2 border-emerald-400 bg-emerald-500/15 dark:border-emerald-300 dark:bg-emerald-400/20">
-          <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-emerald-300"></span>
+        <span class="inline-flex h-4 w-4 items-center justify-center rounded-full border-2 border-[var(--color-network-mainnet-border)] bg-[var(--color-network-mainnet-soft)]">
+          <span class="h-1.5 w-1.5 rounded-full bg-[var(--color-network-mainnet)]"></span>
         </span>
         <span class="flex-1">Mainnet</span>
         <Check id="header-network-check-mainnet" class="h-4 w-4 text-[var(--primary)]" aria-hidden="true" />
@@ -52,7 +52,7 @@ import Button from "../../ui/Button.astro";
         data-selected="false"
         class="flex w-full items-center gap-3 rounded-[var(--radius-md)] border border-transparent px-3 py-3 text-left text-sm font-semibold text-[var(--foreground)] hover:bg-[var(--color-nav-hover)]"
       >
-        <Zap class="h-4 w-4 text-amber-500 dark:text-amber-400" aria-hidden="true" />
+        <Zap class="h-4 w-4 text-[var(--color-network-devnet)]" aria-hidden="true" />
         <span class="flex-1">Devnet</span>
         <Check id="header-network-check-devnet" class="hidden h-4 w-4 text-[var(--primary)]" aria-hidden="true" />
       </button>

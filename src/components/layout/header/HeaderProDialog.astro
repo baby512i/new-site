@@ -1,19 +1,16 @@
 ---
 import { Wallet, X } from "@lucide/astro";
 import Button from "../../ui/Button.astro";
+import DialogShell from "../../ui/DialogShell.astro";
 ---
 
-<dialog
-  id="header-pro-dialog"
-  class="dialog-panel fixed bottom-2 left-1/2 right-auto top-auto m-0 w-[min(40rem,calc(100vw-1rem))] -translate-x-1/2 translate-y-0 p-0 backdrop:bg-black/40 backdrop:backdrop-blur-[1px] sm:top-1/2 sm:bottom-auto sm:-translate-y-1/2"
-  aria-labelledby="header-pro-title"
->
+<DialogShell id="header-pro-dialog" labelledBy="header-pro-title" widthClass="w-[min(40rem,calc(100vw-1rem))]">
   <div class="space-y-4 p-5 sm:space-y-5 sm:p-6">
     <div class="mx-auto h-1 w-12 rounded-full bg-[var(--color-text-muted)]/40 sm:hidden"></div>
     <div class="dialog-header flex items-start justify-between gap-3 pb-3.5 sm:pb-4">
       <div>
-        <h2 id="header-pro-title" class="text-[1.2rem] font-semibold tracking-tight text-[var(--color-text)]">Become PRO</h2>
-        <p class="mt-1.5 text-[13px] leading-5 text-[var(--color-text-muted)]">PRO unlocks premium SOL tools.</p>
+        <h2 id="header-pro-title" class="dialog-title">Become PRO</h2>
+        <p class="dialog-description">PRO unlocks premium SOL tools.</p>
       </div>
       <button
         id="header-pro-close"
@@ -37,6 +34,7 @@ import Button from "../../ui/Button.astro";
           <span class="h-2 w-2 rounded-full bg-[var(--color-pro-text)] opacity-0 group-has-[:checked]:opacity-100"></span>
         </span>
         <span class="min-w-0 flex-1">
+          <!-- Intentional 15px/13px: plan rows are compact dialog list rows with dense helper text. -->
           <span class="block text-[15px] font-semibold leading-tight text-[var(--color-text)]">Degen Pass</span>
           <span class="mt-1 block text-[13px] leading-4 text-[var(--color-text-muted)]">1 day access</span>
         </span>
@@ -52,6 +50,7 @@ import Button from "../../ui/Button.astro";
           <span class="h-2 w-2 rounded-full bg-[var(--color-pro-text)] opacity-0 group-has-[:checked]:opacity-100"></span>
         </span>
         <span class="min-w-0 flex-1">
+          <!-- Intentional 15px/13px: plan rows are compact dialog list rows with dense helper text. -->
           <span class="block text-[15px] font-semibold leading-tight text-[var(--color-text)]">Trenches Pass</span>
           <span class="mt-1 block text-[13px] leading-4 text-[var(--color-text-muted)]">1 month access</span>
         </span>
@@ -67,6 +66,7 @@ import Button from "../../ui/Button.astro";
           <span class="h-2 w-2 rounded-full bg-[var(--color-pro-text)] opacity-0 group-has-[:checked]:opacity-100"></span>
         </span>
         <span class="min-w-0 flex-1">
+          <!-- Intentional 15px/13px: plan rows are compact dialog list rows with dense helper text. -->
           <span class="block text-[15px] font-semibold leading-tight text-[var(--color-text)]">Based Pass</span>
           <span class="mt-1 block text-[13px] leading-4 text-[var(--color-text-muted)]">1 year access</span>
         </span>
@@ -88,4 +88,4 @@ import Button from "../../ui/Button.astro";
       PRO does not include Solana network transaction fees.
     </p>
   </div>
-</dialog>
+</DialogShell>

@@ -1,0 +1,29 @@
+---
+interface Props {
+  id: string;
+  labelledBy: string;
+  widthClass?: string;
+  class?: string;
+}
+
+const {
+  id,
+  labelledBy,
+  widthClass = "w-[min(34rem,calc(100vw-1rem))]",
+  class: className = "",
+} = Astro.props;
+
+const dialogClass = [
+  "dialog-panel dialog-sheet fixed bottom-2 left-1/2 right-auto top-auto m-0 -translate-x-1/2 translate-y-0 overflow-hidden p-0 backdrop:bg-[var(--color-dialog-backdrop)] backdrop:backdrop-blur-[1px] sm:top-1/2 sm:bottom-auto sm:-translate-y-1/2",
+  widthClass,
+  className,
+]
+  .filter(Boolean)
+  .join(" ");
+---
+
+<dialog id={id} class={dialogClass} aria-labelledby={labelledBy}>
+  <div class="dialog-content">
+    <slot />
+  </div>
+</dialog>
