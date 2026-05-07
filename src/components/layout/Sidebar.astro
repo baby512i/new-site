@@ -27,9 +27,9 @@ const groups = [
     items: [
       { href: "/mint-solana-token", label: "Mint Solana Token" },
       { href: "/burn-solana-token", label: "Burn Solana Token" },
-      { href: "/update-token-metadata", label: "Update  Token Metadata" },
-      { href: "/view-token-metadata", label: "View  Token Metadata" },
-      { href: "/snapshot-token-holders", label: "Snapshot  Token Holders" },
+      { href: "/update-token-metadata", label: "Update Token Metadata" },
+      { href: "/view-token-metadata", label: "View Token Metadata" },
+      { href: "/snapshot-token-holders", label: "Snapshot Token Holders" },
       { href: "/solana-token-multisender", label: "Solana Token Multisender" },
       { href: "/freeze-account", label: "Freeze Account" },
       { href: "/unfreeze-account", label: "Unfreeze Account" },
@@ -45,7 +45,7 @@ const groups = [
       { href: "/revoke-metadata-authority", label: "Revoke Metadata Authority" },
       { href: "/revoke-tax-config-authority", label: "Revoke Tax Config Authority" },
       { href: "/revoke-withdraw-authority", label: "Revoke Withdraw Authority" },
-      { href: "/transfer-token-authority", label: "Transfer  Token Authority" },
+      { href: "/transfer-token-authority", label: "Transfer Token Authority" },
     ],
   },
   {
@@ -163,15 +163,15 @@ const homeActive = isActive("/");
   <button
     type="button"
     id="sidebar-backdrop"
-    class="fixed inset-x-0 bottom-0 top-16 z-30 hidden bg-slate-950/45 lg:hidden"
+    class="fixed inset-x-0 bottom-0 top-[var(--header-height)] z-30 hidden bg-slate-950/35 dark:bg-slate-950/55 lg:hidden"
     aria-label="Close sidebar"
   />
 
   <button
     type="button"
     id="sidebar-toggle"
-    class="absolute z-30 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-md hover:border-blue-200 hover:text-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 lg:flex dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:border-sky-700 dark:hover:text-sky-300 dark:focus-visible:outline-sky-400"
-    style="top: 7rem; right: -0.875rem;"
+    class="absolute z-30 hidden h-8 w-8 -translate-y-1/2 items-center justify-center rounded-r-[var(--radius-md)] rounded-l-none border border-[var(--border)] border-l-0 bg-[var(--card)] text-slate-600 hover:text-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 lg:flex dark:text-slate-300 dark:hover:text-sky-300 dark:focus-visible:outline-sky-400"
+    style="top: 7rem; right: -0.5rem;"
     aria-controls="app-sidebar"
     aria-expanded="true"
     aria-label="Collapse sidebar"
@@ -186,7 +186,7 @@ const homeActive = isActive("/");
 
   <aside
     id="app-sidebar"
-    class="sidebar-root fixed bottom-0 left-0 top-16 z-40 h-[calc(100dvh-4rem)] w-[288px] shrink-0 -translate-x-full overflow-hidden border-r border-slate-200/80 bg-white transition-none lg:sticky lg:top-16 lg:z-auto lg:block lg:h-[calc(100vh-4rem)] lg:translate-x-0 lg:bg-white/80 dark:border-slate-800/80 dark:bg-slate-950"
+    class="sidebar-root fixed bottom-0 left-0 top-[var(--header-height)] z-40 h-[calc(100dvh-var(--header-height))] w-[min(288px,calc(100vw-2rem))] shrink-0 -translate-x-full overflow-hidden border-r border-[var(--border-muted)] bg-white/95 transition-none lg:sticky lg:top-[var(--header-height)] lg:z-auto lg:block lg:h-[calc(100vh-var(--header-height))] lg:w-[288px] lg:translate-x-0 lg:bg-white/90 dark:border-slate-800 dark:bg-slate-950"
     aria-label="Sidebar"
   >
   <div class="flex h-full flex-col">
@@ -201,18 +201,18 @@ const homeActive = isActive("/");
               title="Home"
               aria-current={homeActive ? "page" : undefined}
               class:list={[
-                "sidebar-nav-link group flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:focus-visible:outline-sky-400",
+                "sidebar-nav-link group flex h-10 items-center gap-2.5 rounded-[var(--radius-lg)] px-2.5 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:focus-visible:outline-sky-400",
                 homeActive
-                  ? "border border-blue-200 bg-blue-50 font-semibold text-blue-700 shadow-sm dark:border-sky-600/80 dark:bg-sky-400/10 dark:text-sky-200"
-                  : "border border-transparent font-medium text-slate-600 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 hover:shadow-sm dark:text-slate-300 dark:hover:border-sky-700 dark:hover:bg-sky-400/10 dark:hover:text-sky-300",
+                  ? "border border-blue-200 bg-blue-50/85 font-semibold text-blue-700 dark:border-sky-500/45 dark:bg-sky-400/12 dark:text-sky-200"
+                  : "border border-transparent font-medium text-slate-700 hover:border-blue-100 hover:bg-blue-50/70 hover:text-blue-700 dark:text-slate-200 dark:hover:border-sky-700/70 dark:hover:bg-sky-400/10 dark:hover:text-sky-300",
               ]}
             >
               <span
                 class:list={[
-                  "grid h-8 w-8 shrink-0 place-items-center rounded-lg",
+                  "grid h-[30px] w-[30px] shrink-0 place-items-center rounded-[var(--radius-md)]",
                   homeActive
                     ? "bg-blue-100 text-blue-700 dark:bg-sky-400/20 dark:text-sky-300"
-                    : "bg-slate-100 text-slate-500 group-hover:bg-blue-100 group-hover:text-blue-700 dark:bg-slate-800 dark:text-slate-400 dark:group-hover:bg-sky-400/15 dark:group-hover:text-sky-300",
+                    : "bg-slate-100 text-slate-500 group-hover:bg-blue-100 group-hover:text-blue-700 dark:bg-slate-800 dark:text-slate-300 dark:group-hover:bg-sky-400/15 dark:group-hover:text-sky-300",
                 ]}
               >
                 <House class="h-5 w-5" aria-hidden="true" />
@@ -233,18 +233,18 @@ const homeActive = isActive("/");
                     title={item.label}
                     aria-current={active ? "page" : undefined}
                     class:list={[
-                      "sidebar-nav-link group flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:focus-visible:outline-sky-400",
+                      "sidebar-nav-link group flex h-10 items-center gap-2.5 rounded-[var(--radius-lg)] px-2.5 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:focus-visible:outline-sky-400",
                       active
-                        ? "border border-blue-200 bg-blue-50 font-semibold text-blue-700 shadow-sm dark:border-sky-600/80 dark:bg-sky-400/10 dark:text-sky-200"
-                        : "border border-transparent font-medium text-slate-600 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 hover:shadow-sm dark:text-slate-300 dark:hover:border-sky-700 dark:hover:bg-sky-400/10 dark:hover:text-sky-300",
+                        ? "border border-blue-200 bg-blue-50/85 font-semibold text-blue-700 dark:border-sky-500/45 dark:bg-sky-400/12 dark:text-sky-200"
+                        : "border border-transparent font-medium text-slate-700 hover:border-blue-100 hover:bg-blue-50/70 hover:text-blue-700 dark:text-slate-200 dark:hover:border-sky-700/70 dark:hover:bg-sky-400/10 dark:hover:text-sky-300",
                     ]}
                   >
                     <span
                       class:list={[
-                        "grid h-8 w-8 shrink-0 place-items-center rounded-lg",
+                        "grid h-[30px] w-[30px] shrink-0 place-items-center rounded-[var(--radius-md)]",
                         active
                           ? "bg-blue-100 text-blue-700 dark:bg-sky-400/20 dark:text-sky-300"
-                          : "bg-slate-100 text-slate-500 group-hover:bg-blue-100 group-hover:text-blue-700 dark:bg-slate-800 dark:text-slate-400 dark:group-hover:bg-sky-400/15 dark:group-hover:text-sky-300",
+                          : "bg-slate-100 text-slate-500 group-hover:bg-blue-100 group-hover:text-blue-700 dark:bg-slate-800 dark:text-slate-300 dark:group-hover:bg-sky-400/15 dark:group-hover:text-sky-300",
                       ]}
                     >
                       <item.icon class="h-5 w-5" aria-hidden="true" />
@@ -261,7 +261,7 @@ const homeActive = isActive("/");
 
       <!-- Tool groups -->
       <div>
-        <p class="sidebar-section-title mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">
+        <p class="sidebar-section-title mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
           Categories
         </p>
 
@@ -272,12 +272,12 @@ const homeActive = isActive("/");
               return (
               <li class="sidebar-category-item">
                 <details
-                  class="group/details rounded-2xl border border-transparent open:border-blue-200 open:bg-blue-50 open:shadow-sm open:shadow-slate-200/50 dark:open:border-sky-700 dark:open:bg-sky-400/10 dark:open:shadow-black/20"
+                  class="group/details rounded-[var(--radius-xl)] border border-transparent open:border-blue-200/85 open:bg-blue-50/70 dark:open:border-sky-700/70 dark:open:bg-sky-400/10"
                   open={groupHasActive}
                 >
-                  <summary class="sidebar-category-summary flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 rounded-2xl border border-transparent px-3 text-sm font-medium text-slate-600 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:text-slate-300 dark:hover:border-sky-700 dark:hover:bg-sky-400/10 dark:hover:text-sky-300 dark:focus-visible:outline-sky-400">
+                  <summary class="sidebar-category-summary flex h-10 cursor-pointer list-none items-center justify-between gap-2.5 rounded-[var(--radius-xl)] border border-transparent px-2.5 text-sm font-medium text-slate-700 hover:border-blue-100 hover:bg-blue-50/70 hover:text-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:text-slate-200 dark:hover:border-sky-700/70 dark:hover:bg-sky-400/10 dark:hover:text-sky-300 dark:focus-visible:outline-sky-400">
                     <span class="flex min-w-0 items-center gap-3">
-                      <span class="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-slate-100 text-slate-500 group-hover/details:bg-blue-100 group-hover/details:text-blue-700 dark:bg-slate-800 dark:text-slate-400 dark:group-hover/details:bg-sky-400/15 dark:group-hover/details:text-sky-300">
+                      <span class="grid h-[30px] w-[30px] shrink-0 place-items-center rounded-[var(--radius-md)] bg-slate-100 text-slate-500 group-hover/details:bg-blue-100 group-hover/details:text-blue-700 dark:bg-slate-800 dark:text-slate-300 dark:group-hover/details:bg-sky-400/15 dark:group-hover/details:text-sky-300">
                         <group.icon class="h-5 w-5" aria-hidden="true" />
                       </span>
 
@@ -293,7 +293,7 @@ const homeActive = isActive("/");
                     </span>
                   </summary>
 
-                  <ul class="sidebar-submenu mx-3 mb-3 mt-1 grid gap-1 pl-3">
+                  <ul class="sidebar-submenu mx-2.5 mb-2.5 mt-1 grid gap-1 pl-3">
                     {
                       group.items.map((item) => {
                         const subActive = isActive(item.href);
@@ -304,10 +304,10 @@ const homeActive = isActive("/");
                             title={item.label}
                             aria-current={subActive ? "page" : undefined}
                             class:list={[
-                              "group/item flex min-h-9 items-center gap-2 rounded-lg px-2 py-1.5 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:focus-visible:outline-sky-400",
+                              "group/item flex min-h-[34px] items-center gap-2 rounded-[var(--radius-md)] px-2 py-1.5 text-[13px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:focus-visible:outline-sky-400",
                               subActive
-                                ? "border border-blue-200/80 bg-blue-50 font-medium text-blue-700 dark:border-sky-600/50 dark:bg-sky-400/10 dark:text-sky-200"
-                                : "border border-transparent text-slate-600 hover:bg-blue-100 hover:text-blue-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white",
+                                ? "border border-blue-200/80 bg-blue-50/75 font-medium text-blue-700 dark:border-sky-600/50 dark:bg-sky-400/10 dark:text-sky-200"
+                                : "border border-transparent text-slate-700 hover:border-blue-100 hover:bg-blue-50/60 hover:text-blue-800 dark:text-slate-200 dark:hover:border-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-100",
                             ]}
                           >
                             <span
@@ -336,17 +336,17 @@ const homeActive = isActive("/");
     </nav>
 
     <!-- Sidebar footer -->
-    <div class="sidebar-footer border-t border-slate-200/80 p-3 dark:border-slate-800/80">
+    <div class="sidebar-footer border-t border-[var(--border-muted)] p-3 dark:border-slate-800">
       <a
         href="/solana-token-management"
         title="Token management hub — guides"
-        class="sidebar-footer-link flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-3 py-3 text-sm font-medium text-slate-600 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-sky-700 dark:hover:bg-sky-400/10 dark:hover:text-sky-300"
+        class="sidebar-footer-link flex items-center justify-between rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--muted)]/55 px-3 py-2.5 text-sm font-medium text-slate-700 hover:border-blue-200 hover:bg-blue-50/70 hover:text-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-sky-700 dark:hover:bg-sky-400/10 dark:hover:text-sky-300 dark:focus-visible:outline-sky-400"
       >
         <span class="sidebar-footer-text min-w-0">
           <span class="block text-xs font-semibold text-slate-950 dark:text-slate-50">
             Need a guide?
           </span>
-          <span class="block text-xs font-normal text-slate-500 dark:text-slate-400">
+          <span class="block text-xs font-normal text-slate-600 dark:text-slate-300">
             Token management hub
           </span>
         </span>
@@ -453,92 +453,94 @@ const homeActive = isActive("/");
     overflow: hidden;
   }
 
-  html.sidebar-collapsed .sidebar-root {
-    width: 4rem;
-    max-width: 4rem;
-    overflow-x: visible;
-    overflow-y: hidden;
-  }
+  @media (min-width: 1024px) {
+    html.sidebar-collapsed .sidebar-root {
+      width: var(--sidebar-collapsed-width);
+      max-width: var(--sidebar-collapsed-width);
+      overflow-x: visible;
+      overflow-y: hidden;
+    }
 
-  html.sidebar-collapsed .sidebar-root .sidebar-scroll {
-    overflow-x: visible;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-  }
+    html.sidebar-collapsed .sidebar-root .sidebar-scroll {
+      overflow-x: visible;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
 
-  html.sidebar-collapsed .sidebar-root .sidebar-section-title {
-    display: none;
-  }
+    html.sidebar-collapsed .sidebar-root .sidebar-section-title {
+      display: none;
+    }
 
-  html.sidebar-collapsed .sidebar-root .sidebar-link-label {
-    display: none;
-  }
+    html.sidebar-collapsed .sidebar-root .sidebar-link-label {
+      display: none;
+    }
 
-  html.sidebar-collapsed .sidebar-root .sidebar-chevron {
-    display: none;
-  }
+    html.sidebar-collapsed .sidebar-root .sidebar-chevron {
+      display: none;
+    }
 
-  html.sidebar-collapsed .sidebar-root .sidebar-nav-link,
-  html.sidebar-collapsed .sidebar-root .sidebar-category-summary {
-    justify-content: center;
-    padding-left: 0.25rem;
-    padding-right: 0.25rem;
-    gap: 0;
-  }
+    html.sidebar-collapsed .sidebar-root .sidebar-nav-link,
+    html.sidebar-collapsed .sidebar-root .sidebar-category-summary {
+      justify-content: center;
+      padding-left: 0.25rem;
+      padding-right: 0.25rem;
+      gap: 0;
+    }
 
-  html.sidebar-collapsed .sidebar-root .sidebar-category-summary .flex.min-w-0 {
-    min-width: 0;
-    justify-content: center;
-  }
+    html.sidebar-collapsed .sidebar-root .sidebar-category-summary .flex.min-w-0 {
+      min-width: 0;
+      justify-content: center;
+    }
 
-  html.sidebar-collapsed .sidebar-root .sidebar-footer {
-    padding: 0.5rem;
-  }
+    html.sidebar-collapsed .sidebar-root .sidebar-footer {
+      padding: 0.5rem;
+    }
 
-  html.sidebar-collapsed .sidebar-root .sidebar-footer-link {
-    justify-content: center;
-    padding: 0.625rem;
-  }
+    html.sidebar-collapsed .sidebar-root .sidebar-footer-link {
+      justify-content: center;
+      padding: 0.625rem;
+    }
 
-  html.sidebar-collapsed .sidebar-root .sidebar-footer-text,
-  html.sidebar-collapsed .sidebar-root .sidebar-footer-arrow {
-    display: none;
-  }
+    html.sidebar-collapsed .sidebar-root .sidebar-footer-text,
+    html.sidebar-collapsed .sidebar-root .sidebar-footer-arrow {
+      display: none;
+    }
 
-  html.sidebar-collapsed .sidebar-root .sidebar-footer-icon {
-    display: grid;
-  }
+    html.sidebar-collapsed .sidebar-root .sidebar-footer-icon {
+      display: grid;
+    }
 
-  html.sidebar-collapsed .sidebar-root .sidebar-category-item {
-    position: relative;
-    z-index: 1;
-  }
+    html.sidebar-collapsed .sidebar-root .sidebar-category-item {
+      position: relative;
+      z-index: 1;
+    }
 
-  html.sidebar-collapsed .sidebar-root .sidebar-submenu {
-    position: absolute;
-    left: calc(100% + 0.25rem);
-    top: 0;
-    margin: 0;
-    width: 16rem;
-    max-height: min(70vh, 24rem);
-    overflow-y: auto;
-    padding: 0.5rem;
-    padding-left: 0.75rem;
-    border-radius: 0.75rem;
-    border: 1px solid rgb(226 232 240 / 0.95);
-    background: rgb(255 255 255);
-    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.08);
-    z-index: 40;
-  }
+    html.sidebar-collapsed .sidebar-root .sidebar-submenu {
+      position: absolute;
+      left: calc(100% + 0.25rem);
+      top: 0;
+      margin: 0;
+      width: 16rem;
+      max-height: min(70vh, 24rem);
+      overflow-y: auto;
+      padding: 0.5rem;
+      padding-left: 0.75rem;
+      border-radius: 0.75rem;
+      border: 1px solid rgb(226 232 240 / 0.95);
+      background: rgb(255 255 255);
+      box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.08);
+      z-index: 40;
+    }
 
-  html.dark.sidebar-collapsed .sidebar-root .sidebar-submenu {
-    border-color: rgb(30 41 59 / 0.9);
-    background: rgb(15 23 42);
-    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.35);
-  }
+    html.dark.sidebar-collapsed .sidebar-root .sidebar-submenu {
+      border-color: rgb(30 41 59 / 0.9);
+      background: rgb(15 23 42);
+      box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.35);
+    }
 
-  html.sidebar-collapsed .sidebar-root details[open] {
-    position: relative;
-    z-index: 20;
+    html.sidebar-collapsed .sidebar-root details[open] {
+      position: relative;
+      z-index: 20;
+    }
   }
 </style>

@@ -1,35 +1,59 @@
-<footer class="border-t border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
-  <div class="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-4 lg:px-8">
-    <section class="lg:col-span-2">
-      <h2 class="text-base font-semibold tracking-tight text-slate-950 dark:text-slate-50">Solana Tools</h2>
-      <p class="mt-2 max-w-md text-base leading-7 text-slate-600 dark:text-slate-300">
-        Modern, practical Solana tools and clear guides for creating, managing, and securing your token workflows.
-      </p>
-    </section>
-    <nav aria-label="Tool links">
-      <h3 class="text-sm font-medium text-slate-950 dark:text-slate-50">Tools</h3>
-      <ul class="mt-3 grid gap-2">
-        <li>
-          <a href="/create/token" class="text-sm text-slate-600 hover:text-blue-700 dark:text-slate-300 dark:hover:text-sky-300">Create Token</a>
-        </li>
-        <li>
-          <a href="/manage/revoke" class="text-sm text-slate-600 hover:text-blue-700 dark:text-slate-300 dark:hover:text-sky-300">Revoke Authority</a>
-        </li>
-      </ul>
-    </nav>
-    <nav aria-label="Legal links">
-      <h3 class="text-sm font-medium text-slate-950 dark:text-slate-50">Legal</h3>
-      <ul class="mt-3 grid gap-2">
-        <li>
-          <a href="/privacy" class="text-sm text-slate-600 hover:text-blue-700 dark:text-slate-300 dark:hover:text-sky-300">Privacy</a>
-        </li>
-        <li>
-          <a href="/terms" class="text-sm text-slate-600 hover:text-blue-700 dark:text-slate-300 dark:hover:text-sky-300">Terms</a>
-        </li>
-      </ul>
-    </nav>
+<footer class="border-t border-[var(--border-muted)] bg-white/95 dark:border-slate-800 dark:bg-slate-950">
+  <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
+    <!-- TODO: Ensure all footer routes exist as SEO pages before production; remove or replace non-existent links. -->
+    <div class="grid gap-8 sm:gap-9 lg:grid-cols-4 lg:gap-10">
+      <section aria-labelledby="footer-brand-title" class="lg:pr-4">
+        <h2 id="footer-brand-title" class="text-base font-semibold tracking-tight text-slate-950 dark:text-slate-50">
+          Solana Tools
+        </h2>
+        <p class="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300">
+          Lightweight Solana tools for creating tokens, managing authorities, liquidity actions, wallet utilities, and safer on-chain workflows.
+        </p>
+        <p class="mt-3 text-sm leading-6 text-slate-500 dark:text-slate-400">
+          Non-custodial by design. Wallet signing happens only when you confirm an action.
+        </p>
+      </section>
+
+      <nav aria-label="Token tools links">
+        <h3 class="text-sm font-semibold text-slate-900 dark:text-slate-100">Token Tools</h3>
+        <ul class="mt-3 grid gap-2.5">
+          <li><a href="/create-solana-token" class="text-sm text-slate-600 hover:text-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:text-slate-300 dark:hover:text-sky-300 dark:focus-visible:outline-sky-400">Create Solana Token</a></li>
+          <li><a href="/mint-solana-token" class="text-sm text-slate-600 hover:text-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:text-slate-300 dark:hover:text-sky-300 dark:focus-visible:outline-sky-400">Mint Solana Token</a></li>
+          <li><a href="/burn-solana-token" class="text-sm text-slate-600 hover:text-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:text-slate-300 dark:hover:text-sky-300 dark:focus-visible:outline-sky-400">Burn Solana Token</a></li>
+          <li><a href="/update-token-metadata" class="text-sm text-slate-600 hover:text-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:text-slate-300 dark:hover:text-sky-300 dark:focus-visible:outline-sky-400">Update Token Metadata</a></li>
+          <li><a href="/snapshot-token-holders" class="text-sm text-slate-600 hover:text-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:text-slate-300 dark:hover:text-sky-300 dark:focus-visible:outline-sky-400">Snapshot Token Holders</a></li>
+        </ul>
+      </nav>
+
+      <nav aria-label="Authority and liquidity links">
+        <h3 class="text-sm font-semibold text-slate-900 dark:text-slate-100">Authority &amp; Liquidity</h3>
+        <ul class="mt-3 grid gap-2.5">
+          <li><a href="/revoke-solana-authority" class="text-sm text-slate-600 hover:text-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:text-slate-300 dark:hover:text-sky-300 dark:focus-visible:outline-sky-400">Revoke Solana Authority</a></li>
+          <li><a href="/revoke-mint-authority" class="text-sm text-slate-600 hover:text-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:text-slate-300 dark:hover:text-sky-300 dark:focus-visible:outline-sky-400">Revoke Mint Authority</a></li>
+          <li><a href="/create-liquidity-pool" class="text-sm text-slate-600 hover:text-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:text-slate-300 dark:hover:text-sky-300 dark:focus-visible:outline-sky-400">Create Liquidity Pool</a></li>
+          <li><a href="/add-solana-liquidity" class="text-sm text-slate-600 hover:text-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:text-slate-300 dark:hover:text-sky-300 dark:focus-visible:outline-sky-400">Add Solana Liquidity</a></li>
+          <li><a href="/remove-solana-liquidity" class="text-sm text-slate-600 hover:text-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:text-slate-300 dark:hover:text-sky-300 dark:focus-visible:outline-sky-400">Remove Solana Liquidity</a></li>
+        </ul>
+      </nav>
+
+      <nav aria-label="Resources and legal links">
+        <h3 class="text-sm font-semibold text-slate-900 dark:text-slate-100">Resources &amp; Legal</h3>
+        <ul class="mt-3 grid gap-2.5">
+          <li><a href="/solana-token-management" class="text-sm text-slate-600 hover:text-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:text-slate-300 dark:hover:text-sky-300 dark:focus-visible:outline-sky-400">Solana Token Management</a></li>
+          <li><a href="/solana-wallet-tools" class="text-sm text-slate-600 hover:text-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:text-slate-300 dark:hover:text-sky-300 dark:focus-visible:outline-sky-400">Solana Wallet Tools</a></li>
+          <li><a href="/safety" class="text-sm text-slate-600 hover:text-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:text-slate-300 dark:hover:text-sky-300 dark:focus-visible:outline-sky-400">Safety</a></li>
+          <li><a href="/privacy" class="text-sm text-slate-600 hover:text-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:text-slate-300 dark:hover:text-sky-300 dark:focus-visible:outline-sky-400">Privacy</a></li>
+          <li><a href="/terms" class="text-sm text-slate-600 hover:text-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:text-slate-300 dark:hover:text-sky-300 dark:focus-visible:outline-sky-400">Terms</a></li>
+          <li><a href="/risk-disclaimer" class="text-sm text-slate-600 hover:text-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:text-slate-300 dark:hover:text-sky-300 dark:focus-visible:outline-sky-400">Risk Disclaimer</a></li>
+        </ul>
+      </nav>
+    </div>
   </div>
-  <div class="border-t border-slate-200 px-4 py-4 text-center text-xs text-slate-500 dark:border-slate-800 dark:text-slate-400">
-    © {new Date().getFullYear()} Solana Tools. All rights reserved.
+
+  <div class="border-t border-[var(--border-muted)]">
+    <div class="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 py-4 text-xs text-slate-500 sm:px-6 lg:flex-row lg:px-8 dark:text-slate-400">
+      <p>© {new Date().getFullYear()} Solana Tools. All rights reserved.</p>
+      <p>Built for non-custodial Solana workflows.</p>
+    </div>
   </div>
 </footer>

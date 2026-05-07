@@ -5,6 +5,7 @@
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
   --radius-2xl: 1.25rem;
+  --modal-radius: 1.5rem;
   --radius-full: 9999px;
 
   --border: #e2e8f0;
@@ -19,7 +20,7 @@
   --shadow-md: 0 12px 24px -8px rgba(15, 23, 42, 0.2);
   --shadow-lg: 0 24px 48px -16px rgba(15, 23, 42, 0.28);
 
-  --header-height: 4rem;
+  --header-height: 3.5rem;
   --sidebar-width: 16.25rem;
   --sidebar-collapsed-width: 5rem;
 
