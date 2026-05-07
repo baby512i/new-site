@@ -40,7 +40,9 @@ const setWalletButtonState = (state: "disconnected" | "loading" | "connected" | 
 
   if (state === "loading") {
     walletDisconnectedLabel.classList.add("hidden");
+    walletDisconnectedLabel.classList.remove("inline-flex");
     walletConnectedLabel.classList.remove("hidden");
+    walletConnectedLabel.classList.add("inline-flex");
     walletConnectedLabel.textContent = "Loading...";
     walletButtonIcon?.classList.remove("hidden");
     walletButton.setAttribute("aria-label", "Loading Solana wallet");
@@ -50,7 +52,9 @@ const setWalletButtonState = (state: "disconnected" | "loading" | "connected" | 
   if (address && isLikelySolanaAddress(address)) {
     const short = shortAddress(address);
     walletDisconnectedLabel.classList.add("hidden");
+    walletDisconnectedLabel.classList.remove("inline-flex");
     walletConnectedLabel.classList.remove("hidden");
+    walletConnectedLabel.classList.add("inline-flex");
     walletConnectedLabel.textContent = short;
     walletButtonIcon?.classList.remove("hidden");
     walletButton.setAttribute("aria-label", `Connected Solana wallet ${short}`);
@@ -58,8 +62,10 @@ const setWalletButtonState = (state: "disconnected" | "loading" | "connected" | 
   }
 
   walletConnectedLabel.classList.add("hidden");
+  walletConnectedLabel.classList.remove("inline-flex");
   walletConnectedLabel.textContent = "";
   walletDisconnectedLabel.classList.remove("hidden");
+  walletDisconnectedLabel.classList.add("inline-flex");
   walletButtonIcon?.classList.remove("hidden");
   walletButton.setAttribute("aria-label", "Connect Solana wallet");
 };
