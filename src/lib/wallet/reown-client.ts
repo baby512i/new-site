@@ -12,6 +12,7 @@ type ThemeMode = "light" | "dark";
 
 export const SOLANA_NAMESPACE = "solana" as const;
 const SOLANA_WALLET_CACHE_KEY = "solana-wallet-address";
+const SOLANA_WALLET_MANUAL_DISCONNECT_KEY = "solana-wallet-manual-disconnect";
 
 let appKit: AppKitInstance | null = null;
 
@@ -66,6 +67,22 @@ export function cacheAddress(address: string | null) {
 export function getCachedSolanaWalletAddress() {
   if (typeof window === "undefined") return null;
   return window.localStorage.getItem(SOLANA_WALLET_CACHE_KEY);
+}
+
+function isManualDisconnectFlagged() {
+  if (typeof window === "undefined") return false;
+  return window.localStorage.getItem(SOLANA_WALLET_MANUAL_DISCONNECT_KEY) === "true";
+}
+
+function setManualDisconnectFlag(value: boolean) {
+  if (typeof window === "undefined") return;
+
+  if (value) {
+    window.localStorage.setItem(SOLANA_WALLET_MANUAL_DISCONNECT_KEY, "true");
+    return;
+  }
+
+  window.localStorage.removeItem(SOLANA_WALLET_MANUAL_DISCONNECT_KEY);
 }
 
 function getInjectedSolanaProvider(): SolanaInjectedProvider | null {
@@ -154,6 +171,13 @@ export function getSolanaAddress(modal: AppKitInstance) {
 }
 
 function readSolanaWalletStatus(modal: AppKitInstance): SolanaWalletStatus {
+  if (isManualDisconnectFlagged()) {
+    cacheAddress(null);
+    return {
+      isConnected: false,
+    };
+  }
+
   const connected = hasSolanaSession(modal);
   const address = connected ? getSolanaAddress(modal) : undefined;
 
@@ -329,6 +353,7 @@ export function initReownAppKit() {
 }
 
 export async function openSolanaConnectModal() {
+  setManualDisconnectFlag(false);
   const modal = initReownAppKit();
   syncAppKitThemeMode(modal);
   await modal.ready();
@@ -336,6 +361,7 @@ export async function openSolanaConnectModal() {
 }
 
 export async function disconnectSolanaWallet(): Promise<void> {
+  setManualDisconnectFlag(true);
   const modal = initReownAppKit();
 
   if ("ready" in modal && typeof modal.ready === "function") {
@@ -422,6 +448,7 @@ export async function openSolanaWalletModal() {
    * Keep this connect-only to avoid stale connected-wallet UI.
    * Connected wallet interactions must use the custom wallet account dialog.
    */
+  setManualDisconnectFlag(false);
   const modal = initReownAppKit();
   syncAppKitThemeMode(modal);
   await modal.ready();
@@ -493,6 +520,19 @@ export async function subscribeSolanaWalletStatus(onChange: (status: SolanaWalle
 
   if (injectedProvider?.on) {
     const handleAccountChanged = (publicKey?: unknown) => {
+      if (isManualDisconnectFlagged()) {
+        cacheAddress(null);
+        const status: SolanaWalletStatus = { isConnected: false };
+        onChange(status);
+        window.dispatchEvent(
+          new CustomEvent("solana-wallet-status-change", {
+            detail: status,
+          }),
+        );
+        emitSoon();
+        return;
+      }
+
       const nextAddress =
         normalizeInjectedPublicKey(publicKey) || readInjectedSolanaAddress();
 
@@ -529,6 +569,19 @@ export async function subscribeSolanaWalletStatus(onChange: (status: SolanaWalle
     };
 
     const handleConnect = (publicKey?: unknown) => {
+      if (isManualDisconnectFlagged()) {
+        cacheAddress(null);
+        const status: SolanaWalletStatus = { isConnected: false };
+        onChange(status);
+        window.dispatchEvent(
+          new CustomEvent("solana-wallet-status-change", {
+            detail: status,
+          }),
+        );
+        emitSoon();
+        return;
+      }
+
       const nextAddress =
         normalizeInjectedPublicKey(publicKey) || readInjectedSolanaAddress();
 

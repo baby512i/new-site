@@ -5,6 +5,7 @@ import {
 
 const WALLET_CACHE_KEY = "solana-wallet-address";
 const WALLET_TOUCHED_KEY = "solana-wallet-touched";
+const WALLET_MANUAL_DISCONNECT_KEY = "solana-wallet-manual-disconnect";
 
 type WalletStatus = {
   isConnected?: boolean;
@@ -35,6 +36,10 @@ const hasCachedWallet = () => {
 };
 
 const shouldSyncReownNow = () => {
+  if (window.localStorage.getItem(WALLET_MANUAL_DISCONNECT_KEY) === "true") {
+    return false;
+  }
+
   return walletWasTouched || hasCachedWallet();
 };
 
