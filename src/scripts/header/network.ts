@@ -1,4 +1,10 @@
-const HEADER_NETWORK_KEY = "solana-network";
+import {
+  getStoredSolanaNetwork,
+  normalizeSolanaNetwork,
+  setStoredSolanaNetwork,
+  type SolanaNetworkValue,
+} from "../../lib/network/solana-network";
+
 const HEADER_PRIORITY_KEY = "solana-priority-fee";
 const HEADER_JITO_KEY = "solana-jito-fee";
 
@@ -48,12 +54,6 @@ const hydrateStoredValue = (element: Element | null, key: string, fallback: stri
   return fallback;
 };
 
-const getStoredNetwork = () => {
-  const value = localStorage.getItem(HEADER_NETWORK_KEY);
-  if (value === "mainnet" || value === "devnet") return value;
-  return "mainnet";
-};
-
 const closeNetworkMenu = () => {
   if (!(networkMenu instanceof HTMLElement)) return;
   if (!(networkTrigger instanceof HTMLButtonElement)) return;
@@ -68,10 +68,17 @@ const openNetworkMenu = () => {
   networkTrigger.setAttribute("aria-expanded", "true");
 };
 
-const setNetwork = (network: string) => {
-  const value = network === "devnet" ? "devnet" : "mainnet";
+type SetNetworkOptions = {
+  emit?: boolean;
+};
+
+const setNetwork = (
+  network: string,
+  options: SetNetworkOptions = {},
+) => {
+  const value: SolanaNetworkValue = normalizeSolanaNetwork(network);
   document.documentElement.setAttribute("data-network", value);
-  localStorage.setItem(HEADER_NETWORK_KEY, value);
+  setStoredSolanaNetwork(value);
 
   if (networkCurrentLabel instanceof HTMLElement) {
     networkCurrentLabel.textContent = value === "devnet" ? "Devnet" : "Mainnet";
@@ -105,9 +112,17 @@ const setNetwork = (network: string) => {
   if (mobileNetworkDevnetButton instanceof HTMLElement) {
     mobileNetworkDevnetButton.dataset.selected = value === "devnet" ? "true" : "false";
   }
+
+  if (options.emit) {
+    window.dispatchEvent(
+      new CustomEvent("solana-network-change", {
+        detail: { network: value },
+      }),
+    );
+  }
 };
 
-setNetwork(getStoredNetwork());
+setNetwork(getStoredSolanaNetwork());
 
 networkTrigger?.addEventListener("click", () => {
   if (!(networkMenu instanceof HTMLElement)) return;
@@ -123,13 +138,17 @@ document.querySelectorAll("[data-network-option]").forEach((option) => {
   option.addEventListener("click", () => {
     if (!(option instanceof HTMLButtonElement)) return;
     const next = option.dataset.networkOption === "devnet" ? "devnet" : "mainnet";
-    setNetwork(next);
+    setNetwork(next, { emit: true });
     closeNetworkMenu();
   });
 });
 
-mobileNetworkMainnetButton?.addEventListener("click", () => setNetwork("mainnet"));
-mobileNetworkDevnetButton?.addEventListener("click", () => setNetwork("devnet"));
+mobileNetworkMainnetButton?.addEventListener("click", () => {
+  setNetwork("mainnet", { emit: true });
+});
+mobileNetworkDevnetButton?.addEventListener("click", () => {
+  setNetwork("devnet", { emit: true });
+});
 
 document.addEventListener("click", (event) => {
   if (!(networkPicker instanceof HTMLElement)) return;
