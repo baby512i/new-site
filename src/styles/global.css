@@ -5,49 +5,100 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
-  --card: #ffffff;
-  --card-foreground: #0f172a;
-  --primary: #2563eb;
-  --primary-hover: #1d4ed8;
-  --primary-foreground: #ffffff;
+  /* App-level aliases — reference semantic tokens from tokens.css */
+  --background: var(--color-bg);
+  --foreground: var(--color-text);
+  --card: var(--color-surface);
+  --card-foreground: var(--color-text);
+  --primary: var(--color-brand);
+  --primary-hover: var(--color-brand-hover);
+  --primary-foreground: var(--color-text-inverse);
   --secondary: #7c3aed;
   --secondary-hover: #6d28d9;
   --accent: #06b6d4;
-  --accent-soft: #e0f7fa;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-  --input: var(--border-strong);
-  --success: #16a34a;
-  --warning: #f59e0b;
-  --danger: #dc2626;
-  --sidebar: #ffffff;
-  --sidebar-foreground: #334155;
-  --sidebar-active: #eff6ff;
-  --sidebar-active-foreground: #1d4ed8;
+  --accent-soft: var(--color-brand-soft);
+  --muted: var(--color-surface-muted);
+  --muted-foreground: var(--color-text-muted);
+  --input: var(--color-border-strong);
+  --success: var(--color-success);
+  --warning: var(--color-warning);
+  --danger: var(--color-danger);
+  --sidebar: var(--color-sidebar);
+  --sidebar-foreground: var(--color-text-secondary);
+  --sidebar-active: var(--color-nav-active);
+  --sidebar-active-foreground: var(--color-nav-active-text);
 }
 
 .dark {
-  --background: #020617;
-  --foreground: #e5e7eb;
-  --card: #0f172a;
-  --card-foreground: #f8fafc;
-  --primary: #38bdf8;
-  --primary-hover: #0ea5e9;
-  --primary-foreground: #020617;
+  --background: var(--color-bg);
+  --foreground: var(--color-text);
+  --card: var(--color-surface-elevated);
+  --card-foreground: var(--color-text);
+  --primary: var(--color-brand);
+  --primary-hover: var(--color-brand-hover);
+  --primary-foreground: var(--color-text-inverse);
   --secondary: #a78bfa;
   --secondary-hover: #8b5cf6;
   --accent: #22d3ee;
-  --accent-soft: rgba(34, 211, 238, 0.12);
-  --muted: #111827;
-  --muted-foreground: #94a3b8;
-  --input: var(--border-strong);
-  --success: #22c55e;
-  --warning: #fbbf24;
-  --danger: #f87171;
-  --sidebar: #020617;
-  --sidebar-foreground: #cbd5e1;
-  --sidebar-active: rgba(56, 189, 248, 0.12);
-  --sidebar-active-foreground: #7dd3fc;
+  --accent-soft: var(--color-brand-soft);
+  --muted: var(--color-surface-muted);
+  --muted-foreground: var(--color-text-muted);
+  --input: var(--color-border-strong);
+  --success: var(--color-success);
+  --warning: var(--color-warning);
+  --danger: var(--color-danger);
+  --sidebar: var(--color-sidebar);
+  --sidebar-foreground: var(--color-text-secondary);
+  --sidebar-active: var(--color-nav-active);
+  --sidebar-active-foreground: var(--color-nav-active-text);
+}
+
+[data-network-option][data-selected="true"],
+[data-mobile-network-option][data-selected="true"] {
+  border-color: var(--color-nav-active-border);
+  background: var(--color-nav-active);
+  color: var(--color-nav-active-text);
+}
+
+.dialog-panel {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-elevated);
+  color: var(--color-text);
+  box-shadow: var(--shadow-lg);
+  border-radius: var(--modal-radius);
+}
+
+.dialog-header {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.dialog-close-button {
+  display: inline-flex;
+  height: 2.5rem;
+  width: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  border-radius: var(--radius-md);
+}
+
+.dialog-close-button:hover {
+  background: var(--color-nav-hover);
+  color: var(--color-text-secondary);
+}
+
+.dialog-close-button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--ring-soft);
+}
+
+.pro-plan-card {
+  border-color: var(--color-border);
+  background: var(--color-surface-muted);
+}
+
+.pro-plan-card:has(input:checked) {
+  border-color: var(--color-pro-border);
+  background: var(--color-pro-soft);
 }

@@ -1,0 +1,101 @@
+---
+import { Check, ChevronDown, Moon, SlidersHorizontal, Sparkles, Sun, Zap } from "@lucide/astro";
+import Button from "../../ui/Button.astro";
+---
+
+<div class="hidden items-center gap-2 min-[850px]:flex">
+  <div id="header-network-picker" class="relative">
+    <button
+      id="header-network-trigger"
+      type="button"
+      aria-label="Select Solana network"
+      aria-haspopup="menu"
+      aria-expanded="false"
+      class="inline-flex h-10 items-center gap-2 rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--card)] px-3 text-sm font-semibold text-[var(--foreground)] outline-none hover:bg-[var(--muted)] focus:border-[var(--ring)] focus:ring-2 focus:ring-[var(--ring-soft)] min-[1200px]:px-3.5"
+    >
+      <span id="header-network-current-icon" class="inline-flex" aria-hidden="true">
+        <span id="header-network-current-icon-mainnet" class="inline-flex h-5 w-5 items-center justify-center rounded-full border-2 border-emerald-400 bg-emerald-500/15 dark:border-emerald-300 dark:bg-emerald-400/20">
+          <span class="h-2 w-2 rounded-full bg-emerald-500 dark:bg-emerald-300"></span>
+        </span>
+        <Zap id="header-network-current-icon-devnet" class="hidden h-5 w-5 text-amber-500 dark:text-amber-400" aria-hidden="true" />
+      </span>
+      <span class="hidden min-[1024px]:inline">Network:</span>
+      <span id="header-network-current-label">Mainnet</span>
+      <ChevronDown class="h-4 w-4 text-[var(--muted-foreground)]" aria-hidden="true" />
+    </button>
+
+    <div
+      id="header-network-menu"
+      role="menu"
+      aria-label="Network options"
+      class="absolute right-0 top-[calc(100%+0.55rem)] z-50 hidden min-w-52 rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--card)] p-2 shadow-[var(--shadow-md)]"
+    >
+      <button
+        type="button"
+        role="menuitemradio"
+        aria-checked="true"
+        data-network-option="mainnet"
+        data-selected="true"
+        class="flex w-full items-center gap-3 rounded-[var(--radius-md)] border border-transparent px-3 py-3 text-left text-sm font-semibold text-[var(--foreground)] hover:bg-[var(--color-nav-hover)]"
+      >
+        <span class="inline-flex h-4 w-4 items-center justify-center rounded-full border-2 border-emerald-400 bg-emerald-500/15 dark:border-emerald-300 dark:bg-emerald-400/20">
+          <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-emerald-300"></span>
+        </span>
+        <span class="flex-1">Mainnet</span>
+        <Check id="header-network-check-mainnet" class="h-4 w-4 text-[var(--primary)]" aria-hidden="true" />
+      </button>
+      <button
+        type="button"
+        role="menuitemradio"
+        aria-checked="false"
+        data-network-option="devnet"
+        data-selected="false"
+        class="flex w-full items-center gap-3 rounded-[var(--radius-md)] border border-transparent px-3 py-3 text-left text-sm font-semibold text-[var(--foreground)] hover:bg-[var(--color-nav-hover)]"
+      >
+        <Zap class="h-4 w-4 text-amber-500 dark:text-amber-400" aria-hidden="true" />
+        <span class="flex-1">Devnet</span>
+        <Check id="header-network-check-devnet" class="hidden h-4 w-4 text-[var(--primary)]" aria-hidden="true" />
+      </button>
+    </div>
+  </div>
+
+  <Button
+    id="header-fees-button"
+    type="button"
+    variant="outline"
+    size="sm"
+    class="h-10 rounded-[var(--radius-lg)] px-3 text-sm font-semibold min-[1200px]:px-3.5"
+    aria-label="Open transaction fee settings"
+  >
+    <SlidersHorizontal class="h-[18px] w-[18px]" aria-hidden="true" />
+    <span id="header-fees-button-label">Fees: Normal</span>
+  </Button>
+
+  <Button
+    id="header-pro-button"
+    type="button"
+    variant="soft"
+    size="sm"
+    class="h-10 rounded-[var(--radius-lg)] border-[var(--color-pro-border)] bg-[var(--color-pro-soft)] px-3 text-sm font-semibold text-[var(--color-pro-text)] hover:brightness-95 min-[1200px]:px-3.5"
+    aria-label="Open PRO plans"
+  >
+    <Sparkles class="h-[18px] w-[18px]" aria-hidden="true" />
+    PRO
+  </Button>
+
+  <Button
+    id="theme-toggle"
+    type="button"
+    variant="outline"
+    size="icon"
+    class="h-10 w-10 rounded-[var(--radius-lg)]"
+    aria-label="Toggle color theme"
+  >
+    <span id="theme-toggle-icon-dark" class="hidden" aria-hidden="true">
+      <Sun class="h-5 w-5" aria-hidden="true" />
+    </span>
+    <span id="theme-toggle-icon-light" aria-hidden="true">
+      <Moon class="h-5 w-5" aria-hidden="true" />
+    </span>
+  </Button>
+</div>

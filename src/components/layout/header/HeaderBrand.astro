@@ -1,0 +1,37 @@
+---
+import { Menu } from "@lucide/astro";
+import Button from "../../ui/Button.astro";
+---
+
+<div class="flex min-w-0 flex-1 items-center gap-2">
+  <Button
+    id="mobile-sidebar-button"
+    type="button"
+    variant="outline"
+    size="icon"
+    class="shrink-0 lg:hidden"
+    aria-label="Toggle sidebar"
+    aria-expanded="false"
+    aria-controls="app-sidebar"
+  >
+    <Menu class="h-5 w-5" aria-hidden="true" />
+  </Button>
+
+  <a
+    href="/"
+    class="inline-flex min-w-0 max-w-[min(100%,14rem)] shrink items-center gap-2 rounded-[var(--radius-md)] px-1 py-1 text-[var(--color-text)] transition-colors hover:bg-[var(--color-nav-hover)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)] sm:max-w-none sm:gap-2.5 sm:px-1.5 sm:py-1.5"
+    aria-label="Go to homepage"
+  >
+    <span
+      class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[var(--color-brand)] text-sm font-semibold text-[var(--color-text-inverse)] sm:h-[34px] sm:w-[34px]"
+      aria-hidden="true"
+    >
+      ST
+    </span>
+    <span
+      class="hidden min-w-0 truncate text-sm font-semibold tracking-tight min-[375px]:inline sm:text-[15px]"
+    >
+      Solana Tools
+    </span>
+  </a>
+</div>

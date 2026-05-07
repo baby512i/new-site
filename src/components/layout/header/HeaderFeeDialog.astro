@@ -1,0 +1,77 @@
+---
+import { ChevronDown, CircleHelp, X } from "@lucide/astro";
+---
+
+<dialog
+  id="header-fees-dialog"
+  class="dialog-panel fixed bottom-2 left-1/2 right-auto top-auto m-0 w-[min(35rem,calc(100vw-1rem))] -translate-x-1/2 translate-y-0 p-0 backdrop:bg-black/40 backdrop:backdrop-blur-[1px] sm:top-1/2 sm:bottom-auto sm:-translate-y-1/2"
+  aria-labelledby="header-fees-title"
+>
+  <div class="dialog-header px-5 py-4 sm:px-6">
+    <div class="mx-auto mb-3 h-1 w-12 rounded-full bg-[var(--color-text-muted)]/40 sm:hidden"></div>
+    <div class="flex items-center justify-between gap-3">
+      <div>
+        <h2 id="header-fees-title" class="text-[1.15rem] font-semibold leading-none tracking-tight text-[var(--color-text)]">
+          Configuration
+        </h2>
+        <p class="mt-1.5 text-[13px] leading-5 text-[var(--color-text-muted)]">
+          Adjust network and fee presets for faster transaction confirmation.
+        </p>
+      </div>
+      <button
+        id="header-fees-close"
+        type="button"
+        class="dialog-close-button focus:outline-none"
+        aria-label="Close fee settings"
+      >
+        <X class="h-4 w-4" aria-hidden="true" />
+      </button>
+    </div>
+  </div>
+
+  <div class="space-y-5 px-5 py-5 sm:px-6 sm:py-6">
+    <div class="space-y-2.5">
+      <label for="fees-priority-select" class="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--color-text-secondary)]">
+        Priority Fee
+        <CircleHelp class="h-4 w-4 text-[var(--color-text-muted)]" aria-label="Priority fee help" title="Priority fee affects transaction speed and cost." />
+      </label>
+      <div class="relative">
+        <select
+          id="fees-priority-select"
+          class="h-[3.05rem] w-full appearance-none rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-4 pr-10 text-[15px] font-medium text-[var(--color-text)] outline-none focus:border-[var(--ring)] focus:ring-2 focus:ring-[var(--ring-soft)]"
+        >
+          <option value="normal" data-fee-sol="0.005">Normal - 0.005 SOL</option>
+          <option value="fast" data-fee-sol="0.007">Fast - 0.007 SOL</option>
+          <option value="turbo" data-fee-sol="0.01">Turbo - 0.01 SOL</option>
+        </select>
+        <ChevronDown class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" aria-hidden="true" />
+      </div>
+      <div class="flex flex-wrap gap-1.5">
+        <span class="rounded-[var(--radius-full)] border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-2.5 py-1 text-xs font-medium text-[var(--color-text-muted)]">Market 0.00013 SOL</span>
+        <span class="rounded-[var(--radius-full)] border border-[var(--color-brand-border)] bg-[var(--color-brand-soft)] px-2.5 py-1 text-xs font-medium text-[var(--color-brand-text)]">95% 0.007 SOL</span>
+      </div>
+    </div>
+
+    <div class="space-y-2.5">
+      <label for="fees-jito-select" class="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--color-text-secondary)]">
+        Jito Tip
+        <CircleHelp class="h-4 w-4 text-[var(--color-text-muted)]" aria-label="Jito tip help" title="Jito tip can improve inclusion priority." />
+      </label>
+      <div class="relative">
+        <select
+          id="fees-jito-select"
+          class="h-[3.05rem] w-full appearance-none rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-4 pr-10 text-[15px] font-medium text-[var(--color-text)] outline-none focus:border-[var(--ring)] focus:ring-2 focus:ring-[var(--ring-soft)]"
+        >
+          <option value="5x" data-fee-sol="0.0005">5X - 0.0005 SOL</option>
+          <option value="10x" data-fee-sol="0.001">10X - 0.001 SOL</option>
+          <option value="20x" data-fee-sol="0.002">20X - 0.002 SOL</option>
+        </select>
+        <ChevronDown class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-text-muted)]" aria-hidden="true" />
+      </div>
+      <div class="flex flex-wrap gap-1.5">
+        <span class="rounded-[var(--radius-full)] border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-2.5 py-1 text-xs font-medium text-[var(--color-text-muted)]">Market 0 SOL</span>
+        <span class="rounded-[var(--radius-full)] border border-[var(--color-brand-border)] bg-[var(--color-brand-soft)] px-2.5 py-1 text-xs font-medium text-[var(--color-brand-text)]">99% 0.0002 SOL</span>
+      </div>
+    </div>
+  </div>
+</dialog>

@@ -1,0 +1,15 @@
+---
+import { Settings } from "@lucide/astro";
+import Button from "../../ui/Button.astro";
+---
+
+<Button
+  id="mobile-header-settings-button"
+  type="button"
+  variant="outline"
+  size="icon"
+  class="max-[429px]:hidden min-[850px]:hidden"
+  aria-label="Open header settings"
+>
+  <Settings class="h-5 w-5" aria-hidden="true" />
+</Button>

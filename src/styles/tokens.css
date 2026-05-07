@@ -1,4 +1,9 @@
 :root {
+  /* Typography (optional shell tokens; body font unchanged — available for components) */
+  --font-sans: ui-sans-serif, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --tracking-heading: -0.025em;
+  --text-nav: 0.875rem;
+
   --radius-xs: 0.375rem;
   --radius-sm: 0.5rem;
   --radius-md: 0.625rem;
@@ -8,16 +13,62 @@
   --modal-radius: 1.5rem;
   --radius-full: 9999px;
 
-  --border: #e2e8f0;
-  --border-muted: #e2e8f0;
-  --border-strong: #94a3b8;
+  /* Semantic palette — light */
+  --color-bg: #f8fafc;
+  --color-bg-soft: #f1f5f9;
 
-  --ring: #2563eb;
+  --color-surface: #ffffff;
+  --color-surface-elevated: #ffffff;
+  --color-surface-muted: #f8fafc;
+  --color-surface-overlay: rgba(255, 255, 255, 0.92);
+
+  --color-header: rgba(255, 255, 255, 0.88);
+  --color-sidebar: #ffffff;
+  --color-footer: #ffffff;
+
+  --color-border: #e2e8f0;
+  --color-border-strong: #cbd5e1;
+
+  --color-text: #0f172a;
+  --color-text-secondary: #334155;
+  --color-text-muted: #64748b;
+  --color-text-inverse: #ffffff;
+
+  --color-brand: #2563eb;
+  --color-brand-hover: #1d4ed8;
+  --color-brand-soft: #eff6ff;
+  --color-brand-border: #bfdbfe;
+  --color-brand-text: #1d4ed8;
+  --color-pro: #7c3aed;
+  --color-pro-hover: #6d28d9;
+  --color-pro-soft: #f5f3ff;
+  --color-pro-border: #ddd6fe;
+  --color-pro-text: #6d28d9;
+  --color-pro-ring: rgba(124, 58, 237, 0.22);
+
+  --color-nav-hover: #f1f5f9;
+  --color-nav-active: #eff6ff;
+  --color-nav-active-text: #1d4ed8;
+  --color-nav-active-border: #93c5fd;
+
+  --color-danger: #dc2626;
+  --color-warning: #d97706;
+  --color-success: #059669;
+
+  --shadow-shell: 0 1px 2px 0 rgba(15, 23, 42, 0.06);
+  --shadow-popover: 0 12px 24px -8px rgba(15, 23, 42, 0.2);
+
+  /* Legacy aliases — map to semantic tokens */
+  --border: var(--color-border);
+  --border-muted: var(--color-border);
+  --border-strong: var(--color-border-strong);
+
+  --ring: var(--color-brand);
   --ring-soft: rgba(37, 99, 235, 0.2);
 
-  --shadow-xs: 0 1px 2px 0 rgba(15, 23, 42, 0.06);
+  --shadow-xs: var(--shadow-shell);
   --shadow-sm: 0 3px 8px -2px rgba(15, 23, 42, 0.14);
-  --shadow-md: 0 12px 24px -8px rgba(15, 23, 42, 0.2);
+  --shadow-md: var(--shadow-popover);
   --shadow-lg: 0 24px 48px -16px rgba(15, 23, 42, 0.28);
 
   --header-height: 3.5rem;
@@ -30,15 +81,59 @@
 }
 
 .dark {
-  --border: #334155;
-  --border-muted: #1e293b;
-  --border-strong: #475569;
+  --color-bg: #020617;
+  --color-bg-soft: #050b18;
 
-  --ring: #38bdf8;
+  --color-surface: #0b1120;
+  --color-surface-elevated: #0f172a;
+  --color-surface-muted: #111827;
+  --color-surface-overlay: rgba(2, 6, 23, 0.92);
+
+  --color-header: rgba(2, 6, 23, 0.9);
+  --color-sidebar: #050b18;
+  --color-footer: #050b18;
+
+  --color-border: #1e293b;
+  --color-border-strong: #334155;
+
+  --color-text: #f8fafc;
+  --color-text-secondary: #cbd5e1;
+  --color-text-muted: #94a3b8;
+  --color-text-inverse: #020617;
+
+  --color-brand: #38bdf8;
+  --color-brand-hover: #0ea5e9;
+  --color-brand-soft: rgba(14, 165, 233, 0.12);
+  --color-brand-border: rgba(56, 189, 248, 0.28);
+  --color-brand-text: #7dd3fc;
+  --color-pro: #a78bfa;
+  --color-pro-hover: #8b5cf6;
+  --color-pro-soft: rgba(139, 92, 246, 0.14);
+  --color-pro-border: rgba(167, 139, 250, 0.35);
+  --color-pro-text: #c4b5fd;
+  --color-pro-ring: rgba(167, 139, 250, 0.28);
+
+  --color-nav-hover: rgba(148, 163, 184, 0.1);
+  --color-nav-active: rgba(14, 165, 233, 0.12);
+  --color-nav-active-text: #7dd3fc;
+  --color-nav-active-border: rgba(56, 189, 248, 0.38);
+
+  --color-danger: #f87171;
+  --color-warning: #fbbf24;
+  --color-success: #34d399;
+
+  --shadow-shell: 0 1px 2px 0 rgba(2, 6, 23, 0.45);
+  --shadow-popover: 0 14px 26px -10px rgba(2, 6, 23, 0.6);
+
+  --border: var(--color-border);
+  --border-muted: var(--color-border);
+  --border-strong: var(--color-border-strong);
+
+  --ring: var(--color-brand);
   --ring-soft: rgba(56, 189, 248, 0.25);
 
-  --shadow-xs: 0 1px 2px 0 rgba(2, 6, 23, 0.45);
+  --shadow-xs: var(--shadow-shell);
   --shadow-sm: 0 6px 12px -4px rgba(2, 6, 23, 0.5);
-  --shadow-md: 0 14px 26px -10px rgba(2, 6, 23, 0.6);
+  --shadow-md: var(--shadow-popover);
   --shadow-lg: 0 28px 52px -20px rgba(2, 6, 23, 0.7);
 }

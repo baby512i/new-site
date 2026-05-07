@@ -1,0 +1,1330 @@
+---
+description: Core project guardrails for the Astro-first Solana Tools website
+alwaysApply: true
+---
+
+# Core Project Guardrails
+
+## Absolute Priority
+
+This website is SEO-first, performance-first, and Astro-first.
+
+Priority order:
+
+1. SEO and indexability
+2. Minimal initial JavaScript
+3. Useful HTML without JavaScript execution
+4. Fast mobile performance
+5. Lightweight, modern, consistent UI
+6. Forms visible before wallet connection
+7. Wallet/Reown/Solana SDK lazy-loaded only after user action
+8. dxra-core-api builds transactions
+9. Frontend only signs non-custodial transactions with the user wallet
+
+If a feature makes public pages heavier, less indexable, or more client-side, reject it unless explicitly approved.
+
+When there is a conflict between more features and a lighter, more indexable page, choose the lighter and more indexable page.
+
+---
+
+## Stack
+
+Use:
+
+- Astro
+- TypeScript
+- Tailwind CSS
+- Static Astro components for public layout
+- React islands only for truly interactive tool forms, uploads, previews, transaction/action flows, or controls that cannot be safely handled with minimal Astro/TypeScript
+- React Hook Form + Zod only inside form islands
+- dxra-core-api wrappers for transaction building
+- Non-custodial wallet signing on the frontend after user action
+
+Do not use:
+
+- Full React SPA for public pages
+- React for Header, Sidebar, or Footer
+- Ant Design
+- MUI
+- Chakra
+- HeroUI/NextUI
+- Flowbite React
+- Rewind UI package
+- Framer Motion
+- global animation libraries
+- global wallet providers
+- global Reown initialization
+- global Solana SDK imports
+- legacy Next.js API routes copied into Astro
+- one huge legacy `solanaHandlers.js` file
+
+shadcn/ui may be used only inside React islands for complex form UI when explicitly requested.
+
+Do not use shadcn/ui for:
+
+- Header
+- Sidebar
+- Footer
+- static SEO sections
+- static cards
+- static modals/sheets
+- public layout shell
+
+---
+
+## Change Scope Rule
+
+When asked to modify one area, modify only that area.
+
+Examples:
+
+- If asked to polish Header, do not redesign Sidebar/Footer.
+- If asked to polish modals, do not refactor wallet logic.
+- If asked to fix styling, do not add dependencies.
+- If asked to improve UI, do not increase JavaScript.
+- If asked to refactor, do not redesign visuals unless requested.
+- If asked to work on UI/UX, do not change SEO copy/routes unless explicitly requested.
+- If asked to fix build/dependencies, do not redesign UI.
+
+Do not create new components, scripts, or architecture unless explicitly requested.
+
+Exception:
+A small shared Astro component may be created only when all of these are true:
+
+- the same pattern already appears in 3+ places
+- it reduces total repeated markup
+- it stays within the requested area
+- it adds no JavaScript
+- it does not change behavior
+- it does not introduce a new dependency
+
+Never use “consistency” as a reason for broad refactoring outside the requested scope.
+
+Not allowed:
+
+- creating new architecture layers without explicit need
+- broad refactors outside the requested scope
+- replacing static Astro UI with React
+- adding dependencies for simple UI patterns
+- changing unrelated files because they are nearby
+- changing routes or SEO structure while doing a visual task
+
+---
+
+## No Bulk Cleanup Rule
+
+Do not perform broad cleanup, formatting, renaming, token migration, route migration, or component extraction unless explicitly requested.
+
+Do not “fix” unrelated code while working on a specific task.
+
+Do not change many files to improve style consistency unless the task explicitly asks for a design-system refactor.
+
+Prefer the smallest safe change that solves the requested problem.
+
+---
+
+## Astro Layout Rule
+
+These must remain Astro/static:
+
+- `src/layouts/BaseLayout.astro`
+- `src/components/layout/Header.astro`
+- `src/components/layout/Sidebar.astro`
+- `src/components/layout/Footer.astro`
+- SEO content sections
+- FAQs
+- breadcrumbs
+- related links
+- static cards
+- warnings and safety notes
+- footer/internal link sections
+- trust/safety sections
+
+Do not hydrate static navigation.
+
+Header/sidebar/footer must not import:
+
+- React UI libraries
+- wallet libraries
+- Reown
+- Solana SDK
+- Raydium SDK
+- Meteora SDK
+- Orca SDK
+- Jito logic
+- transaction logic
+
+Public pages must render meaningful HTML without JavaScript execution.
+
+---
+
+## Initial JavaScript Rule
+
+Initial JS must stay as close to zero as possible.
+
+Allowed tiny JS only for:
+
+- theme persistence
+- mobile sidebar open/close
+- desktop sidebar collapsed state
+- header settings/modal open/close only when already implemented
+- wallet button click trigger
+- small accessibility helpers for menus/dialogs
+- tiny preference persistence such as network/priority fee
+
+Do not add global layout scripts.
+
+Do not bundle in the initial public layout:
+
+- `@reown/appkit`
+- `@reown/appkit-adapter-solana`
+- `@solana/web3.js`
+- `@solana/spl-token`
+- wallet-adapter packages
+- Raydium SDK
+- Meteora SDK
+- Orca SDK
+- Jito logic
+- heavy charting libraries
+- CSV parsing libraries
+- transaction builders
+
+Any heavy library must be dynamically imported only after explicit user action.
+
+---
+
+## Wallet / Reown Rule
+
+Header may show a wallet button, but wallet code must load only after explicit user click.
+
+Allowed:
+
+- Static Astro wallet button
+- Tiny click handler
+- Dynamic import after click: `import("../../lib/wallet/reown-client")`
+- Showing cached connected address if implemented without loading the wallet SDK
+- Updating wallet button text after user interaction
+
+Only this file may import Reown packages:
+
+```txt
+src/lib/wallet/reown-client.ts
+```
+
+Never:
+
+- initialize Reown on page load
+- initialize Reown in Astro frontmatter
+- initialize Reown in layout/header/sidebar/footer
+- use global wallet provider
+- load Reown via `client:load`, `client:idle`, or global React island unless explicitly approved
+- require wallet connection before the form is visible
+- hide the whole form behind a wallet connect button
+
+Forms must remain visible and mostly fillable before wallet connection.
+
+Wallet is required only for the final transaction action.
+
+Good button states:
+
+- `Connect Wallet to Continue`
+- `Review Transaction`
+- `Create Token`
+- `Sign Transaction`
+- `Submitting...`
+- `Transaction Sent`
+
+Bad UX:
+
+- `Connect Wallet` required to see the form
+- loading wallet libraries when the page loads
+- global wallet provider in layout
+- wallet SDK inside public static content
+
+---
+
+## dxra-core-api / Transaction Rule
+
+Transaction construction must be separated from UI and wallet signing.
+
+Use this flow:
+
+1. Static Astro page renders SEO and explanatory content.
+2. React form island collects and validates input.
+3. Client sends validated payload to dxra-core-api wrapper.
+4. dxra-core-api returns raw/unsigned transaction data.
+5. Frontend lazy-loads wallet only when user chooses to sign.
+6. User signs non-custodially in wallet.
+7. Signed transaction is submitted/polled through the approved transaction layer.
+
+Do not:
+
+- build transactions directly inside header/sidebar/footer
+- import Solana SDK into public static layout
+- put private RPC URLs or API secrets in frontend
+- expose server secrets
+- copy legacy Next API routes into Astro
+- copy one huge `solanaHandlers.js` into the new project
+
+Preferred structure:
+
+```txt
+src/lib/dxra-api/
+src/lib/transactions/
+src/lib/validation/
+src/lib/tool-actions/
+src/islands/forms/
+```
+
+---
+
+## Security Rule
+
+Never expose secrets in frontend code.
+
+Do not expose:
+
+- private RPC URLs
+- Helius API keys
+- Pinata JWT
+- Jito private config
+- server secrets
+- internal routing config
+- private API keys
+- signing keys
+
+Allowed public env values:
+
+- `PUBLIC_DXRA_CORE_API_URL`
+- `PUBLIC_SITE_URL`
+- `PUBLIC_DEFAULT_NETWORK`
+- `PUBLIC_REOWN_PROJECT_ID`
+
+All public env values must be safe to expose in browser source.
+
+---
+
+## Design Direction
+
+The UI must feel:
+
+- serious
+- modern
+- clean
+- technical
+- trustworthy
+- calm
+- lightweight
+- user-friendly
+- readable
+- compact without feeling cramped
+
+Avoid:
+
+- crypto casino style
+- excessive neon
+- huge gradients
+- glassmorphism everywhere
+- oversized controls
+- tiny unreadable gray text
+- decorative clutter
+- dashboard-heavy UI
+- random one-off styles
+- too many competing accent colors
+- visually loud hover states
+- page sections that look unrelated to each other
+
+Use:
+
+- subtle borders
+- soft surfaces
+- clear typography
+- compact controls
+- readable spacing
+- simple active states
+- one main blue/cyan accent
+- violet only for premium/PRO states
+- semantic warning/danger/success colors
+- consistent radius and control heights
+
+Wallet button should usually be the strongest global action in the header.
+
+Secondary controls such as Network, Fees, Theme, and PRO must not overpower the primary wallet/action button.
+
+---
+
+## Shared UI System Rule
+
+Repeated UI patterns should use shared Astro components instead of one-off Tailwind blocks when reuse is clear.
+
+Use shared components for repeated:
+
+- buttons
+- cards
+- badges
+- alerts
+- inputs
+- textareas
+- selects/radio groups
+- dialog shells
+- section headers
+- tool cards
+- FAQ blocks
+- warning boxes
+- empty states
+- CTA sections
+
+Preferred component examples:
+
+```txt
+src/components/ui/Button.astro
+src/components/ui/Card.astro
+src/components/ui/Input.astro
+src/components/ui/Alert.astro
+src/components/ui/Badge.astro
+src/components/ui/DialogShell.astro
+src/components/ui/SectionHeader.astro
+src/components/ui/ToolCard.astro
+src/components/ui/FaqBlock.astro
+```
+
+Do not create all preferred UI components upfront.
+
+Create shared components only when needed by the current task.
+
+Do not replace simple working markup with abstractions unless duplication is already clear and the change reduces complexity.
+
+A shared component should make the project easier to maintain, not just move Tailwind classes into another file.
+
+Shared components must:
+
+- use semantic tokens from `tokens.css`
+- support light and dark mode
+- stay compact and mobile-friendly
+- avoid JavaScript unless required
+- expose simple variants only
+- keep accessible focus states
+
+Allowed variants should stay limited.
+
+Button variants:
+
+- `primary`
+- `secondary`
+- `ghost`
+- `danger`
+- `warning`
+- `success`
+- `pro`
+
+Badge variants:
+
+- `neutral`
+- `brand`
+- `success`
+- `warning`
+- `danger`
+- `pro`
+
+Alert variants:
+
+- `info`
+- `success`
+- `warning`
+- `danger`
+
+Do not add a new visual variant unless it is reused in at least 3 places or explicitly requested.
+
+---
+
+## Visual Token Rule
+
+Use `src/styles/tokens.css` as the source of truth for:
+
+- colors
+- surfaces
+- borders
+- radius
+- shadows
+- control heights
+- layout sizes
+- focus rings
+- modal dimensions
+- sidebar/header dimensions
+- semantic status colors
+- premium/PRO colors
+
+Use the existing token naming scheme already present in the project.
+
+Do not rename existing tokens globally unless explicitly requested.
+
+If the project currently uses tokens such as `--background`, `--foreground`, `--card`, `--border`, or `--ring`, keep them stable.
+
+New semantic tokens may be added only when they are reused in 3+ places and do not conflict with existing tokens.
+
+Do not create random hardcoded colors or radii inside components.
+
+Allowed:
+
+- Tailwind spacing and responsive utilities from the approved scale
+- small layout utilities like `gap-2`, `px-4`, `text-sm`
+- one-off values only when they solve a specific responsive issue and are not reusable
+- protocol/logo colors only when they are part of the logo itself
+
+Do not create a new token unless it will be reused in at least 3 places.
+
+Scripts should control state with attributes/classes, not inject hardcoded color styles.
+
+Preferred pattern:
+
+```html
+<button data-selected="false">Mainnet</button>
+```
+
+```css
+[data-selected="true"] {
+  background: var(--color-nav-active);
+  color: var(--color-nav-active-text);
+  border-color: var(--color-nav-active-border);
+}
+```
+
+---
+
+## Layout Sizing
+
+Use shared layout tokens.
+
+Current header height:
+
+```css
+--header-height: 3.5rem;
+```
+
+Do not hardcode:
+
+- `top-16`
+- `h-16`
+- `4rem`
+- `64px`
+
+for layout positioning unless `--header-height` is also updated intentionally.
+
+Sidebar and mobile backdrop must use:
+
+```css
+top: var(--header-height);
+height: calc(100vh - var(--header-height));
+```
+
+Desktop sidebar collapsed width must use:
+
+```css
+--sidebar-collapsed-width
+```
+
+Keep layout dimensions centralized.
+
+Do not create conflicting sidebar/header sizes in individual components.
+
+---
+
+## Component Scale
+
+Use these defaults unless explicitly requested otherwise:
+
+Header:
+
+- height: `var(--header-height)` / 56px
+- controls: 38px to 40px
+- icon buttons: 40px
+- no heavy shadow
+- no wrapping at desktop breakpoints
+- wallet remains primary
+- secondary controls remain compact
+
+Sidebar:
+
+- width: `var(--sidebar-width)`
+- item height: 38px to 42px
+- icon box: 28px to 32px
+- text: 13px to 14px
+- collapsed styles only inside desktop media query
+- no awkward floating submenu unless explicitly designed and tested
+
+Footer:
+
+- static Astro HTML
+- no JS
+- 3 to 4 useful columns
+- clear internal links
+- not oversized
+- balanced spacing
+
+Buttons:
+
+- compact controls: 38px to 40px
+- normal buttons: 44px
+- large CTA: 46px to 48px
+- no default shadow
+- no scale animation
+- consistent radius
+
+Cards:
+
+- compact padding on mobile
+- comfortable padding on desktop
+- consistent border/radius
+- no random shadow
+- surface must be distinguishable from page background
+
+Modals/sheets:
+
+- shell radius: 24px
+- inner card radius: 16px to 20px
+- desktop Fee modal width: 540px to 580px
+- desktop PRO modal width: 620px to 660px
+- close button: 40px by 40px
+- title: 18px to 22px
+- subtitle/helper text: 13px to 14px
+- row labels: 14px to 15px
+- supporting text: 12px to 13px
+- mobile sheets should feel consistent with desktop modals
+
+Mobile:
+
+- touch targets at least 44px
+- no horizontal scroll
+- compact, not chunky
+- brand remains visible in mobile header
+- wallet/action button remains visible
+- secondary controls hide before layout breaks
+
+---
+
+## Typography
+
+Use one sans-serif stack.
+
+Do not load external Google Fonts at runtime.
+
+Do not use decorative fonts.
+
+Default scale:
+
+- body: `text-base leading-7`
+- nav/sidebar: `text-sm`
+- labels: `text-sm font-medium`
+- helper text: `text-xs leading-5`
+- card titles: `text-base` or `text-lg font-semibold`
+- section headings: `text-xl sm:text-2xl font-semibold`
+- page H1: `text-3xl sm:text-4xl font-semibold tracking-tight`
+- modal title: `text-lg` to `text-xl font-semibold`
+
+Avoid:
+
+- `font-black`
+- `font-extrabold`
+- giant text in modals
+- tiny muted text for important instructions
+- inconsistent font weights between similar elements
+- decorative uppercase everywhere
+
+Important instructions must not rely on low-contrast muted text.
+
+---
+
+## Color Usage
+
+Primary action:
+
+- blue/cyan
+
+Premium / PRO:
+
+- violet accent for selected premium states
+- CTA may remain blue/cyan if it is the main action
+
+Network/success:
+
+- emerald/cyan indicator only
+
+Danger:
+
+- red
+
+Warning:
+
+- amber
+
+Neutral UI:
+
+- slate-like surfaces through semantic tokens
+
+Do not use Solana neon green as the dominant UI color.
+
+Do not use new colors unless:
+
+- they map to an existing semantic meaning
+- they are part of a protocol logo
+- they are explicitly requested
+
+---
+
+## Light/Dark Contrast Rule
+
+Every UI change must be checked in both light and dark mode.
+
+Required:
+
+- body text must be clearly readable
+- muted text must not be used for important instructions
+- borders must be visible but subtle
+- active states must be obvious
+- disabled states must remain readable
+- cards must be distinguishable from page background
+- dialogs must have stronger surface separation than normal cards
+- header/sidebar/footer must feel related but not visually merged
+- hover/focus states must be visible in both themes
+
+Avoid:
+
+- dark text below slate-500 on important light-mode content
+- gray text below slate-400 on important dark-mode content
+- dark surfaces that blend into the page background
+- active states that rely only on color without border/background change
+- low-contrast disabled controls
+- bright neon accents on large surfaces
+
+---
+
+## Page Layout Pattern Rule
+
+Public tool pages should follow a consistent layout system.
+
+Use this general structure:
+
+1. Breadcrumb
+2. Hero / intro section
+3. Main tool/form area
+4. Requirements
+5. Fee explanation
+6. How it works
+7. What changes on-chain
+8. Safety notes / warnings
+9. Common mistakes
+10. FAQ
+11. Related tools/guides
+
+Do not invent a completely new layout for every tool page.
+
+Do not clone thin duplicate pages where only the title changes.
+
+Each page may vary by:
+
+- hero copy
+- use case
+- warnings
+- form flow
+- FAQ
+- related links
+- examples
+- risk explanation
+- on-chain explanation
+- screenshots/diagrams if useful and lightweight
+
+Reusable layout sections should be Astro components.
+
+Do not put SEO content only inside React islands.
+
+---
+
+## SEO Public Page Rule
+
+Public pages must be understandable in raw HTML.
+
+`view-source:` should show:
+
+- title
+- meta description
+- canonical
+- H1
+- intro
+- tool explanation
+- requirements
+- warnings/safety notes
+- FAQ
+- related tools
+- internal links
+- footer links
+
+Do not let Google need JavaScript to understand the page.
+
+Tool pages are landing pages first, forms second.
+
+The form must be a React island inside the Astro page only when interactivity is needed.
+
+---
+
+## Hub + Child Page Rule
+
+Use hub pages for broad categories.
+
+Examples:
+
+- `/create-solana-token`
+- `/revoke-solana-authority`
+- `/solana-token-management`
+- `/solana-tax-token-tools`
+- `/create-solana-liquidity-pool`
+- `/solana-bundler`
+- `/solana-wallet-tools`
+
+Create child pages only when they have unique:
+
+- search intent
+- H1/title/meta
+- content
+- risk/warning
+- FAQ
+- related tools
+- form flow
+- on-chain explanation
+
+If a page cannot be meaningfully unique:
+
+- keep it as a mode/tab
+- noindex it
+- or canonical it to the parent
+
+Do not create thin duplicate pages where only the tool name changes.
+
+---
+
+## Form UX Rule
+
+All tool forms must follow one consistent UX pattern.
+
+Forms must:
+
+- be visible before wallet connection
+- be mostly fillable before wallet connection
+- validate with React Hook Form + Zod inside React islands
+- show field-level errors near fields
+- show form-level errors in shared Alert UI
+- explain disabled fields
+- reset or omit hidden fields
+- use disabled fields with a visible reason
+- parent changes must reset/revalidate dependent fields
+- number fields should store raw values, not formatted values
+- separators are display-only
+- token amounts should be strings when precision matters
+- public key validation must not import `@solana/web3.js`
+- async validation must be debounced and guarded against stale responses
+- dangerous fields need warnings/confirmation
+- use one consistent action button area
+- use one consistent loading/success/error pattern
+- keep action buttons clear and state-based
+
+Wallet is required only for the final transaction action.
+
+Do not create custom validation UI per form unless explicitly needed.
+
+Recommended form readiness states:
+
+- missing required fields
+- invalid fields
+- wallet not connected
+- ready to review
+- ready to sign
+- signing
+- submitting
+- success
+- failed
+
+Submit handler is not the main validation layer.
+
+Validation layers:
+
+1. UI constraints
+2. Zod schema
+3. cross-field validation
+4. runtime readiness
+5. transaction/action safety checks
+
+---
+
+## React Island Rule
+
+React islands are allowed only for interactive pieces.
+
+Allowed React islands:
+
+- forms
+- wallet/action flows
+- uploads
+- transaction preview
+- CSV parsing
+- small dynamic tool controls when Astro + tiny TypeScript is insufficient
+
+Not allowed as React islands:
+
+- Header
+- Sidebar
+- Footer
+- SEO content
+- FAQs
+- static tool descriptions
+- static cards
+- breadcrumbs
+- related links
+- blog/guides
+- trust/safety pages
+
+Header, Sidebar, and Footer controls must prefer Astro + minimal TypeScript.
+
+Do not create React islands inside Header, Sidebar, or Footer unless explicitly approved.
+
+A wallet button in the header must not be a React island by default.
+
+React islands must not import wallet/Solana SDKs at top level unless they are already behind a user action and intentionally lazy-loaded.
+
+Prefer dynamic imports for heavy logic inside the event handler.
+
+---
+
+## Shared Token Selector / Heavy Component Rule
+
+Shared components used across many forms must not make every page heavy.
+
+For heavy shared controls such as token selectors:
+
+- keep the visible shell lightweight
+- load search/indexing/data logic only after focus/open/user action
+- debounce network requests
+- avoid importing Solana SDK for public key validation
+- avoid global stores
+- avoid loading token lists on initial page load unless required
+- split heavy parsing/search code into dynamic imports
+- keep SEO content outside the island
+
+Do not let a shared form component become a hidden site-wide bundle tax.
+
+---
+
+## Header Rule
+
+Header must remain:
+
+- Astro-first
+- compact
+- mostly static
+- visually calm
+- responsive
+- no global wallet/Reown
+- no Solana SDK
+- no heavy client logic
+
+Desktop header may include:
+
+- brand
+- network selector
+- fee control
+- PRO entry
+- theme toggle
+- wallet button
+
+But visual hierarchy must remain clear:
+
+1. wallet/action button = primary
+2. network and fee = secondary utility
+3. PRO = special but not louder than wallet
+4. theme = utility icon
+
+Header controls must not wrap at desktop/tablet breakpoints.
+
+At smaller desktop widths, shorten labels before increasing height.
+
+Mobile header must include:
+
+- menu button
+- compact brand
+- wallet/action button
+- settings only if space allows
+
+No horizontal scroll.
+
+---
+
+## Sidebar Rule
+
+Sidebar must remain:
+
+- Astro/static
+- readable
+- compact
+- category-based
+- usable expanded and collapsed
+- consistent in light/dark mode
+
+Collapsed sidebar:
+
+- must not create awkward floating/overlapping submenus unless explicitly designed and tested
+- should expand first when user interacts with a category if that is the simpler UX
+- must not cause horizontal scroll
+- must remain keyboard usable where possible
+
+Sidebar item labels must be consistent and professionally capitalized.
+
+Avoid repetitive labels like:
+
+- `Pump.fun Zone`
+- `Meteora Zone`
+- `Orca Zone`
+
+Prefer cleaner labels:
+
+- `Pump.fun`
+- `PumpSwap`
+- `Meteora`
+- `Orca`
+- `LaunchLab`
+
+Do not remove useful categories without explicit approval.
+
+---
+
+## Footer Rule
+
+Footer must remain:
+
+- static Astro HTML
+- no JavaScript
+- no React
+- no wallet imports
+- clear and useful
+- not oversized
+- visually balanced
+
+Footer should include:
+
+- brand summary
+- useful tool links
+- category links
+- trust/safety or non-custodial note
+- legal/support links if needed
+
+Do not add decorative clutter.
+
+Do not add newsletter/forms unless explicitly requested.
+
+---
+
+## Modal / Dialog Rule
+
+Dialogs and mobile sheets must use a consistent shell style.
+
+Shared expectations:
+
+- same panel radius
+- same surface token
+- same border token
+- same close button style
+- same header/title spacing
+- same subtitle/helper text scale
+- same mobile sheet behavior
+- Escape closes when JS exists
+- outside click closes when JS exists
+- focus styles visible
+
+Use shared classes or shared components when dialog patterns repeat and the component stays simple/static.
+
+Do not use a heavy dialog library for simple header/settings dialogs.
+
+Do not make every modal look like a separate product.
+
+---
+
+## Animation Rule
+
+No motion animations.
+
+Do not use:
+
+- transform animation
+- scale hover
+- slide animation
+- fade animation
+- animated gradient
+- page transition
+- global animation library
+
+Allowed only if needed:
+
+- `transition-colors`
+- max 150ms
+- hover/focus border/background color only
+
+If strict no-animation is requested, remove transitions entirely.
+
+Never add Framer Motion globally.
+
+---
+
+## Accessibility
+
+Interactive controls must be real buttons or links.
+
+Required:
+
+- `aria-label` for icon-only buttons
+- `aria-expanded` for menus
+- `aria-controls` for controlled panels
+- visible focus styles
+- readable contrast in light and dark mode
+- keyboard closable dialogs/menus where JS exists
+- Escape closes modals/menus where JS exists
+- meaningful links use `<a>`
+- actions use `<button>`
+- decorative icons use `aria-hidden="true"`
+
+Do not use clickable divs.
+
+Do not rely on color alone for important active/error states.
+
+---
+
+## Icons
+
+Use:
+
+- `@lucide/astro` for static Astro UI icons
+- local inline SVGs for protocol logos
+
+Do not use:
+
+- `react-icons`
+- icon fonts
+- animated icons
+- global icon imports
+- random icon libraries
+
+Icon sizes:
+
+- sidebar icons: 16px to 18px
+- card icons: 20px
+- hero/tool icons: 24px to 32px max
+
+Decorative icons need `aria-hidden="true"`.
+
+Meaningful icon-only buttons need accessible labels.
+
+Protocol logos should remain lightweight and local.
+
+---
+
+## Brand Consistency Rule
+
+Use one brand name consistently across:
+
+- Header
+- Footer
+- metadata
+- wallet modal metadata
+- mobile brand
+- empty states
+- dialogs
+- tool descriptions
+
+Do not invent alternate names, slogans, or abbreviations unless explicitly requested.
+
+Logo/brand mark:
+
+- use the existing mark
+- do not create new logo styles inside components
+- compact mobile mark must match desktop brand identity
+
+Tone:
+
+- clear
+- technical
+- trustworthy
+- not hype-driven
+- not meme/crypto casino style
+
+If the brand name changes, update it consistently everywhere.
+
+---
+
+## Dependency Rule
+
+Do not add a dependency unless it is clearly necessary and explicitly justified.
+
+Before adding a dependency, prefer:
+
+1. Astro component
+2. Tailwind/CSS
+3. tiny TypeScript script
+4. existing local component
+5. selective shadcn/ui only inside React form islands when explicitly requested
+
+Never add a UI framework for one component.
+
+If a dependency is added, explain:
+
+- why it is necessary
+- where it is imported
+- whether it affects initial JS
+- whether it is server-only or client-side
+- how it preserves SEO/performance goals
+
+---
+
+## File Organization Rule
+
+Keep layers separate:
+
+```txt
+src/components/layout/      # Header, Sidebar, Footer, shell UI
+src/components/ui/          # shared static UI components
+src/components/sections/    # reusable SEO/page sections
+src/islands/forms/          # React form islands
+src/islands/wallet/         # wallet/action islands only if explicitly needed
+src/lib/dxra-api/           # dxra-core-api calls
+src/lib/transactions/       # deserialize/sign/serialize/submit helpers
+src/lib/validation/         # schemas, amount/public key/priority validation
+src/lib/tool-actions/       # tool-specific action flows
+src/scripts/                # tiny non-React UI scripts
+src/styles/                 # tokens and global CSS
+```
+
+Do not mix:
+
+- transaction logic into layout
+- wallet logic into static components
+- SEO content into React islands
+- UI components into API logic
+- large validation logic into page frontmatter
+
+Avoid giant files.
+
+If a file becomes too large or mixes responsibilities, split it into focused files only when explicitly requested or when the current task requires it.
+
+---
+
+## Build / Lockfile Rule
+
+The project must be clean-install safe.
+
+Before calling work complete:
+
+```bash
+npm run build
+```
+
+If dependencies or lockfile changed, also verify:
+
+```bash
+rm -rf node_modules
+npm ci
+npm run build
+```
+
+If `npm ci` fails, fix `package-lock.json` with:
+
+```bash
+npm install
+```
+
+Then commit/upload the updated lockfile.
+
+Do not leave `package.json` and `package-lock.json` out of sync.
+
+---
+
+## UI Review Before Done
+
+Before marking a UI task complete, verify:
+
+Header:
+
+- no wrapping at 320px, 375px, 768px, 1024px, 1440px
+- wallet remains the primary action
+- secondary controls do not visually compete with wallet
+- mobile brand remains visible
+- no horizontal scroll
+
+Sidebar:
+
+- active item is clear
+- collapsed state is usable
+- category labels are consistent
+- no floating/overlapping submenu unless explicitly designed
+- no horizontal scroll
+
+Footer:
+
+- columns are balanced
+- links are readable
+- spacing is not oversized
+- no JS is added
+
+Modals:
+
+- same radius, padding, close button style
+- mobile sheet and desktop modal feel related
+- title/subtitle spacing is consistent
+- close behavior works
+
+General:
+
+- no random new color
+- no random new radius
+- no random shadow
+- no one-off button style
+- light and dark mode both checked
+- mobile and desktop both checked
+
+---
+
+## Verification Before Done
+
+Before saying the task is complete:
+
+- run build
+- check no new dependency was added unless explicitly needed
+- check no React was added to header/sidebar/footer
+- check no wallet/Reown/Solana import leaked into layout/static UI
+- check light and dark mode
+- check mobile width
+- check desktop/tablet widths
+- check no horizontal scroll
+- check initial JS did not increase unnecessarily
+- check `view-source` still contains meaningful HTML
+- check package lock is not broken if dependencies changed
+
+For wallet-related work, search build/source for:
+
+```txt
+@reown
+@solana
+wallet-adapter
+web3.js
+spl-token
+```
+
+These must not appear in the initial public layout bundle.
+
+Allowed:
+
+- static Reown imports only inside `src/lib/wallet/reown-client.ts`
+- dynamic import after user action
+- build chunks that are lazy-loaded only after wallet action
+
+Not allowed:
+
+- static imports in Header
+- static imports in Sidebar
+- static imports in Footer
+- static imports in BaseLayout
+- static imports in public static pages
