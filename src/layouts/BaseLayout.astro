@@ -7,9 +7,10 @@ import "../styles/global.css";
 interface Props {
   title?: string;
   description?: string;
+  canonical?: string;
 }
 
-const { title = "Solana Tools", description = "Modern and responsive Solana tools interface." } = Astro.props;
+const { title = "Solana Tools", description = "Modern and responsive Solana tools interface.", canonical } = Astro.props;
 ---
 
 <html lang="en">
@@ -20,6 +21,8 @@ const { title = "Solana Tools", description = "Modern and responsive Solana tool
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
+    {canonical ? <link rel="canonical" href={canonical} /> : null}
+    <slot name="head" />
     <script is:inline>
       (() => {
         const saved = localStorage.getItem("theme");

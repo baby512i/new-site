@@ -1,0 +1,109 @@
+---
+import {
+  listCreateTokenPlatforms,
+  type CreateTokenPlatform,
+} from "../../../lib/tool-config/create-token-platforms";
+
+interface Props {
+  activePlatformId: CreateTokenPlatform;
+  /**
+   * `/create-solana-token` is the umbrella page (no platform selected yet),
+   * other pages have a real `activePlatformId` and should highlight it.
+   */
+  isUmbrella?: boolean;
+}
+
+const { activePlatformId, isUmbrella = false } = Astro.props;
+const platforms = listCreateTokenPlatforms();
+---
+
+<section
+  aria-labelledby="create-token-platform-nav-heading"
+  class="grid gap-4 rounded-[var(--radius-2xl)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-[var(--shadow-xs)] sm:p-6"
+>
+  <div class="flex flex-col gap-1">
+    <h2
+      id="create-token-platform-nav-heading"
+      class="text-lg font-semibold tracking-[var(--tracking-heading)] text-[var(--color-text)] sm:text-xl"
+    >
+      Pick a token platform
+    </h2>
+    <p class="text-sm leading-[var(--leading-body)] text-[var(--color-text-muted)]">
+      Each platform has its own page, fields, fees, and risks. Selecting a platform navigates to its dedicated tool page so the URL stays shareable and indexable.
+    </p>
+  </div>
+
+  <ul
+    class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
+    role="list"
+    aria-label="Token platforms"
+  >
+    {
+      platforms.map((platform) => {
+        const active = !isUmbrella && platform.id === activePlatformId;
+        return (
+          <li>
+            <a
+              href={platform.url}
+              aria-current={active ? "page" : undefined}
+              class:list={[
+                "group relative flex h-full min-h-[var(--control-lg)] flex-col gap-2 rounded-[var(--radius-lg)] border px-4 py-4 text-sm transition-colors",
+                active
+                  ? "border-[var(--color-nav-active-border)] bg-[var(--color-nav-active)] text-[var(--color-nav-active-text)] shadow-[var(--shadow-xs)]"
+                  : "border-[var(--color-border)] bg-[var(--card)] text-[var(--color-text)] hover:border-[var(--color-brand-border)] hover:bg-[var(--color-brand-soft)] hover:text-[var(--color-brand-text)]",
+              ]}
+            >
+              <div class="flex items-start justify-between gap-3">
+                <span
+                  aria-hidden="true"
+                  class:list={[
+                    "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border",
+                    active
+                      ? "border-[var(--color-brand)] bg-[var(--color-brand-soft)]"
+                      : "border-[var(--color-border-strong)] bg-[var(--color-surface)]",
+                  ]}
+                >
+                  <span
+                    class:list={[
+                      "h-2.5 w-2.5 rounded-full transition-opacity",
+                      active
+                        ? "bg-[var(--color-brand)] opacity-100"
+                        : "bg-[var(--color-brand)] opacity-0 group-hover:opacity-60",
+                    ]}
+                  ></span>
+                </span>
+
+                <span class="flex min-w-0 flex-1 flex-col">
+                  <span class="text-sm font-semibold leading-[var(--leading-title)]">
+                    {platform.label}
+                  </span>
+                  <span
+                    class:list={[
+                      "mt-1 text-xs leading-5",
+                      active
+                        ? "text-[var(--color-nav-active-text)]"
+                        : "text-[var(--color-text-muted)] group-hover:text-[var(--color-brand-text)]",
+                    ]}
+                  >
+                    {platform.intro.split(".")[0]}.
+                  </span>
+                </span>
+              </div>
+
+              <div
+                class:list={[
+                  "mt-auto inline-flex items-center gap-1.5 pt-1 text-xs font-semibold",
+                  active
+                    ? "text-[var(--color-nav-active-text)]"
+                    : "text-[var(--color-brand-text)]",
+                ]}
+              >
+                Open {platform.shortLabel} tool →
+              </div>
+            </a>
+          </li>
+        );
+      })
+    }
+  </ul>
+</section>
