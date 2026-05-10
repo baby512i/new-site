@@ -1,11 +1,11 @@
 ---
 const linkClass =
-  "text-sm text-[var(--color-text-secondary)] transition-colors hover:text-[var(--color-brand-text)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)]";
+  "text-sm text-[var(--color-text-secondary)] transition-colors hover:text-[var(--color-brand-text)] focus-visible:text-[var(--color-brand-text)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)]";
 const headingClass = "text-sm font-semibold text-[var(--color-text)]";
 ---
 
 <footer class="border-t border-[var(--color-border)] bg-[var(--color-footer)]">
-  <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
+  <div class="mx-auto max-w-screen-2xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
     <!-- TODO: Ensure all footer routes exist as SEO pages before production; remove or replace non-existent links. -->
     <div class="grid gap-8 sm:gap-9 lg:grid-cols-4 lg:gap-10">
       <section aria-labelledby="footer-brand-title" class="lg:pr-4">
@@ -58,7 +58,7 @@ const headingClass = "text-sm font-semibold text-[var(--color-text)]";
 
   <div class="border-t border-[var(--color-border)]">
     <div
-      class="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 py-4 text-xs text-[var(--color-text-muted)] sm:px-6 lg:flex-row lg:px-8"
+      class="mx-auto flex max-w-screen-2xl flex-col items-center justify-between gap-2 px-4 py-4 text-xs text-[var(--color-text-muted)] sm:px-6 lg:flex-row lg:px-8"
     >
       <p>© {new Date().getFullYear()} Solana Tools. All rights reserved.</p>
       <p>Built for non-custodial Solana workflows.</p>
