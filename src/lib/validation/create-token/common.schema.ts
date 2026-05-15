@@ -38,14 +38,32 @@ const optionalString = (max: number) =>
     .optional()
     .transform((value) => (value === undefined || value === "" ? undefined : value));
 
-function isValidHttpUrl(value: string): boolean {
-  try {
-    const url = new URL(value);
-    return url.protocol === "https:" || url.protocol === "http:";
-  } catch {
-    return false;
-  }
-}
+const optionalUrl = z
+  .string()
+  .trim()
+  .max(300, "Maximum 300 characters.")
+  .optional()
+  .transform((value) => (value === undefined || value === "" ? undefined : value))
+  .refine(
+    (value) => {
+      if (value === undefined) return true;
+      try {
+        const url = new URL(value);
+        return url.protocol === "https:" || url.protocol === "http:";
+      } catch {
+        return false;
+      }
+    },
+    { message: "Enter a valid http(s) URL." },
+  );
+
+const optionalSocialHandle = (max: number) =>
+  z
+    .string()
+    .trim()
+    .max(max, `Maximum ${max} characters.`)
+    .optional()
+    .transform((value) => (value === undefined || value === "" ? undefined : value));
 
 /**
  * Decimals stored as a string in the form, parsed/validated as integer 0..9.
@@ -85,95 +103,27 @@ export const initialSupplyField = z
     message: "Initial supply must be greater than zero.",
   });
 
-const commonTokenFields = {
+/**
+ * NOTE about the `image` field:
+ * It is intentionally NOT in the schema. The image is a `File` and is kept in
+ * local React state inside the form island, then passed to the action runner.
+ * Including it as `z.unknown()` here used to break RHF's `DefaultValues` type
+ * inference (RHF expects `{} | undefined`, not `unknown | undefined`).
+ *
+ * The dxra-api wrapper (`src/lib/dxra-api/create-token.ts`) is responsible for
+ * attaching the `image` descriptor to the outgoing payload, so the Zod schema
+ * does not need to know about it.
+ */
+export const commonTokenSchema = z.object({
   tokenName: trimmedString(32, "Token name is required."),
   symbol: trimmedString(10, "Symbol is required.").refine(
     (value) => /^[A-Za-z0-9]+$/.test(value),
     { message: "Symbol can only contain letters and numbers." },
   ),
   description: optionalString(500),
-  includeSocialLinks: z.boolean().default(false),
-  website: optionalString(300),
-  telegram: optionalString(80),
-  twitter: optionalString(80),
-  includeAdvancedOptions: z.boolean().default(false),
-  includeCreatorInfo: z.boolean().default(false),
-  creatorName: optionalString(64),
-  creatorWebsite: optionalString(300),
-  includeVanityAddress: z.boolean().default(false),
-  vanityPrefix: optionalString(4),
-  vanitySuffix: optionalString(4),
-  vanityCaseSensitive: z.boolean().default(false),
-};
-
-/**
- * NOTE about the `image` field:
- * It is intentionally NOT in the schema. The image is a `File` and is kept in
- * local React state inside the form island, then passed to the action runner.
- */
-export const commonTokenSchema = z
-  .object(commonTokenFields)
-  .superRefine((data, ctx) => {
-    if (data.includeSocialLinks) {
-      if (data.website && !isValidHttpUrl(data.website)) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Enter a valid http(s) URL.",
-          path: ["website"],
-        });
-      }
-    }
-
-    if (data.includeAdvancedOptions && data.includeCreatorInfo) {
-      if (!data.creatorName?.trim()) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Creator / team name is required when creator info is enabled.",
-          path: ["creatorName"],
-        });
-      }
-      if (data.creatorWebsite && !isValidHttpUrl(data.creatorWebsite)) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Enter a valid http(s) URL.",
-          path: ["creatorWebsite"],
-        });
-      }
-    }
-
-    if (data.includeAdvancedOptions && data.includeVanityAddress) {
-      const prefix = data.vanityPrefix?.trim() ?? "";
-      const suffix = data.vanitySuffix?.trim() ?? "";
-      if (!prefix && !suffix) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Enter a prefix or suffix for the custom address.",
-          path: ["vanityPrefix"],
-        });
-      }
-      if (prefix && !BASE58_REGEX.test(prefix)) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Use base58 characters only (no 0, O, I, l).",
-          path: ["vanityPrefix"],
-        });
-      }
-      if (suffix && !BASE58_REGEX.test(suffix)) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Use base58 characters only (no 0, O, I, l).",
-          path: ["vanitySuffix"],
-        });
-      }
-      const combined = prefix.length + suffix.length;
-      if (combined > 4) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Prefix and suffix combined must be 4 characters or fewer.",
-          path: ["vanityPrefix"],
-        });
-      }
-    }
-  });
+  website: optionalUrl,
+  telegram: optionalSocialHandle(80),
+  twitter: optionalSocialHandle(80),
+});
 
 export type CommonTokenValues = z.infer<typeof commonTokenSchema>;

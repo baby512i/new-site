@@ -89,7 +89,10 @@ export function getCreateTokenActionReadiness(
     case "error":
       return {
         state: "error",
-        label: walletConnected ? "Try again" : "Connect wallet and try again",
+        label: walletConnected
+          ? "Try again"
+          : "Connect wallet and try again",
+        helper: actionState.message,
         canSubmit: true,
       };
     case "idle":
@@ -103,7 +106,7 @@ export function getCreateTokenActionReadiness(
       label: hasInteracted
         ? "Complete required fields"
         : "Review and create token",
-      canSubmit: true,
+      canSubmit: false,
     };
   }
 

@@ -1,81 +1,37 @@
-import type { CreateTokenPlatform } from "../../../../lib/tool-config/create-token-platforms";
-import { CREATE_TOKEN_FEES } from "../../../../lib/tool-config/create-token-fees";
+import type { CreateTokenPlatformConfig } from "../../../../lib/tool-config/create-token-platforms";
 import type { FeeLine } from "../../components/FeeSummary";
-import type { CreateTokenReviewSnapshot } from "./build-review-items";
-
-export interface BuildFeeLinesResult {
-  lines: FeeLine[];
-  totalSol: string;
-}
-
-function formatSol(value: string): string {
-  const n = Number(value);
-  if (!Number.isFinite(n)) return value;
-  return `${value} SOL`;
-}
-
-function isChargeableFee(value: string): boolean {
-  const n = Number(value);
-  return Number.isFinite(n) && n > 0;
-}
-
-function sumSol(values: string[]): string {
-  const total = values.reduce((acc, value) => {
-    const n = Number(value);
-    return Number.isFinite(n) ? acc + n : acc;
-  }, 0);
-  if (total <= 0) return "—";
-  return `~${total.toFixed(5).replace(/\.?0+$/, "")} SOL`;
-}
 
 /**
- * Fee summary from static platform config + enabled optional features.
- * Values are estimates until dxra-core-api returns live numbers.
+ * Static fee summary lines for the right-side panel.
+ *
+ * The numbers stay placeholders ("~") until dxra-core-api returns the real
+ * estimate right before signing. This helper just decides which categories of
+ * fees apply to the active platform.
  */
-export function buildFeeLines(
-  platformId: CreateTokenPlatform,
-  values: CreateTokenReviewSnapshot,
-): BuildFeeLinesResult {
-  const config = CREATE_TOKEN_FEES[platformId];
-  const chargeable: string[] = [config.serviceFeeSol, config.estimatedNetworkFeeSol];
-
+export function buildFeeLines(platform: CreateTokenPlatformConfig): FeeLine[] {
   const lines: FeeLine[] = [
     {
-      label: "Service fee",
-      value: formatSol(config.serviceFeeSol),
-      description: "Platform fee charged at token creation.",
-    },
-    {
-      label: "Estimated network fee",
-      value: formatSol(config.estimatedNetworkFeeSol),
-      description: "Solana transaction fee (approximate).",
+      label: "Solana network rent",
+      value: "~",
+      description: "Required for the mint and metadata accounts.",
     },
   ];
 
-  if (values.includeCreatorInfo) {
-    const creatorFee = config.optionalFees.creatorInfoSol ?? "0";
-    if (isChargeableFee(creatorFee)) {
-      chargeable.push(creatorFee);
-      lines.push({
-        label: "Creator info",
-        value: formatSol(creatorFee),
-      });
-    }
+  const isFirstPartyMint = platform.id === "spl" || platform.id === "taxToken";
+
+  if (!isFirstPartyMint) {
+    lines.push({
+      label: `${platform.shortLabel} fee`,
+      value: "~",
+      description: `Fee charged by ${platform.label} at launch.`,
+    });
   }
 
-  if (values.includeVanityAddress) {
-    const vanityFee = config.optionalFees.vanityAddressSol ?? "0";
-    if (isChargeableFee(vanityFee)) {
-      chargeable.push(vanityFee);
-      lines.push({
-        label: "Vanity address",
-        value: formatSol(vanityFee),
-      });
-    }
-  }
+  lines.push({
+    label: "Platform fee",
+    value: "~",
+    description: "Small fee charged by Solana Tools at creation.",
+  });
 
-  return {
-    lines,
-    totalSol: sumSol(chargeable),
-  };
+  return lines;
 }

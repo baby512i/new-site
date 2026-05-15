@@ -5,7 +5,7 @@ interface Props {
   platform: CreateTokenPlatformConfig;
   /**
    * When true the hero shows umbrella-page copy instead of the active
-   * platform's H1 / intro. Used by `/create-solana-token`.
+   * platform's H1 / intro / badge. Used by `/create-solana-token`.
    */
   isUmbrella?: boolean;
 }
@@ -17,17 +17,49 @@ const hero = isUmbrella
       h1: "Create a Solana Token",
       intro:
         "Pick the right token platform for your launch. Each platform — SPL, Tax Token (Token-2022), Pump.fun, Raydium LaunchLab, Meteora DBC — has its own dedicated tool page with platform-specific fields, fees, and risks.",
+      badge: { label: "All token platforms", tone: "brand" as const },
+      category: "Token creation",
     }
   : {
       h1: platform.h1,
       intro: platform.intro,
+      badge: platform.badge,
+      category: platform.category,
     };
+
+const badgeToneClass: Record<typeof hero.badge.tone, string> = {
+  brand:
+    "border-[var(--color-brand-border)] bg-[var(--color-brand-soft)] text-[var(--color-brand-text)]",
+  pro: "border-[var(--color-pro-border)] bg-[var(--color-pro-soft)] text-[var(--color-pro-text)]",
+  warning:
+    "border-[var(--color-warning-border)] bg-[var(--color-warning-soft)] text-[var(--color-warning-text)]",
+  neutral:
+    "border-[var(--color-border)] bg-[var(--color-surface-muted)] text-[var(--color-text-secondary)]",
+};
 ---
 
 <section
   aria-labelledby="create-token-hero-heading"
   class="grid gap-6 rounded-[var(--radius-2xl)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-[var(--shadow-xs)] sm:p-7 lg:gap-8 lg:p-9"
 >
+  <div class="flex flex-wrap items-center gap-2">
+    <span
+      class={`inline-flex items-center rounded-[var(--radius-full)] border px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] ${badgeToneClass[hero.badge.tone]}`}
+    >
+      {hero.badge.label}
+    </span>
+    <span
+      class="inline-flex items-center rounded-[var(--radius-full)] border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-3 py-1 text-xs font-medium text-[var(--color-text-secondary)]"
+    >
+      {hero.category}
+    </span>
+    <span
+      class="inline-flex items-center rounded-[var(--radius-full)] border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-3 py-1 text-xs font-medium text-[var(--color-text-secondary)]"
+    >
+      Non-custodial · wallet signs only on action
+    </span>
+  </div>
+
   <div class="grid gap-4">
     <h1
       id="create-token-hero-heading"

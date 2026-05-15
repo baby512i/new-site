@@ -2,6 +2,11 @@ import type { CreateTokenPlatformConfig } from "../../../../lib/tool-config/crea
 import type { ReviewItem } from "../../components/ReviewPanel";
 import type { PlatformFieldVisibility } from "./get-platform-field-visibility";
 
+/**
+ * Wide structural snapshot. The form watches the live `useWatch` value which
+ * is `DeepPartial<CreateTokenValues>` — that union narrows poorly across
+ * branches, so we read fields defensively with optional access here.
+ */
 export interface CreateTokenReviewSnapshot {
   tokenName?: string;
   symbol?: string;
@@ -11,8 +16,6 @@ export interface CreateTokenReviewSnapshot {
   maxTransferFee?: string;
   curvePreset?: string;
   initialBuy?: string;
-  includeCreatorInfo?: boolean;
-  includeVanityAddress?: boolean;
   revokeMintAuthority?: boolean;
   revokeFreezeAuthority?: boolean;
   makeImmutable?: boolean;
@@ -20,15 +23,17 @@ export interface CreateTokenReviewSnapshot {
 
 const DASH = "—";
 
+/**
+ * Build the review-panel rows for the active platform, omitting fields the
+ * platform does not support so users never see empty/N/A rows.
+ */
 export function buildReviewItems(
   values: CreateTokenReviewSnapshot,
   platform: CreateTokenPlatformConfig,
   visibility: PlatformFieldVisibility,
-  networkLabel: string,
 ): ReviewItem[] {
   const items: ReviewItem[] = [
-    { label: "Token type", value: platform.label },
-    { label: "Network", value: networkLabel },
+    { label: "Platform", value: platform.label },
     { label: "Name", value: nonEmpty(values.tokenName) ?? DASH },
     { label: "Symbol", value: nonEmpty(values.symbol) ?? DASH },
   ];
@@ -66,11 +71,6 @@ export function buildReviewItems(
   if (visibility.showLaunchBuy && nonEmpty(values.initialBuy)) {
     items.push({ label: "Initial buy", value: `${values.initialBuy} SOL` });
   }
-
-  items.push({
-    label: "Vanity address",
-    value: values.includeVanityAddress ? "Enabled" : "Not enabled",
-  });
 
   if (visibility.showAuthorities) {
     if (values.revokeMintAuthority) {
