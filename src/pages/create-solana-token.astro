@@ -1,16 +1,9 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import CreateTokenLanding from "../components/tools/create-token/CreateTokenLanding.astro";
-
-const title = "Create a Solana Token | Solana Tools";
-const description =
-  "Create a Solana token across SPL, Tax Token (Token-2022 transfer fee), Pump.fun, Raydium LaunchLab, and Meteora DBC. Non-custodial, wallet-signed only on action.";
-const canonical = new URL(
-  "/create-solana-token",
-  Astro.site ?? "https://yourdomain.com",
-).toString();
 ---
 
-<BaseLayout title={title} description={description} canonical={canonical}>
-  <CreateTokenLanding isUmbrella />
+<BaseLayout
+  title="Create Solana Token | Solana Tools"
+  description="Create a new SPL token on Solana."
+>
 </BaseLayout>
