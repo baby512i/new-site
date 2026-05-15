@@ -6,7 +6,7 @@ import {
   type CreateTokenPlatform,
 } from "../../../lib/tool-config/create-token-platforms";
 import CreateTokenHero from "./CreateTokenHero.astro";
-import CreateTokenPlatformNav from "./CreateTokenPlatformNav.astro";
+import CreateTokenTypeNav from "./CreateTokenTypeNav.astro";
 import CreateTokenRequirements from "./CreateTokenRequirements.astro";
 import CreateTokenFeeExplanation from "./CreateTokenFeeExplanation.astro";
 import CreateTokenHowItWorks from "./CreateTokenHowItWorks.astro";
@@ -65,16 +65,12 @@ const platform = CREATE_TOKEN_PLATFORMS[platformId];
 
   <CreateTokenHero platform={platform} isUmbrella={isUmbrella} />
 
-  <CreateTokenPlatformNav
-    activePlatformId={platformId}
-    isUmbrella={isUmbrella}
-  />
-
-  <section aria-label="Token creation form">
-    <CreateTokenForm
-      client:visible
-      initialPlatform={platformId}
+  <section aria-label="Token creation form" class="grid gap-5">
+    <CreateTokenTypeNav
+      activePlatformId={platformId}
+      isUmbrella={isUmbrella}
     />
+    <CreateTokenForm client:visible initialPlatform={platformId} />
   </section>
 
   <CreateTokenRequirements platform={platform} />

@@ -2,8 +2,7 @@ import type { FormHTMLAttributes, ReactNode } from "react";
 
 interface FormShellProps extends FormHTMLAttributes<HTMLFormElement> {
   children: ReactNode;
-  title?: string;
-  description?: string;
+  header?: ReactNode;
   rightPanel?: ReactNode;
 }
 
@@ -20,8 +19,7 @@ interface FormShellProps extends FormHTMLAttributes<HTMLFormElement> {
  */
 export function FormShell({
   children,
-  title,
-  description,
+  header,
   rightPanel,
   className,
   ...formProps
@@ -38,20 +36,7 @@ export function FormShell({
         .join(" ")}
     >
       <div className="grid min-w-0 gap-5 rounded-[var(--radius-2xl)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-[var(--shadow-xs)] sm:p-6">
-        {(title || description) && (
-          <header className="grid gap-1">
-            {title ? (
-              <h2 className="text-lg font-semibold tracking-[var(--tracking-heading)] text-[var(--color-text)] sm:text-xl">
-                {title}
-              </h2>
-            ) : null}
-            {description ? (
-              <p className="text-sm leading-[var(--leading-body)] text-[var(--color-text-muted)]">
-                {description}
-              </p>
-            ) : null}
-          </header>
-        )}
+        {header}
         <div className="grid gap-6">{children}</div>
       </div>
 

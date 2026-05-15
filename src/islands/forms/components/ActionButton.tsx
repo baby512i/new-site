@@ -35,7 +35,7 @@ export function ActionButton({
   ...rest
 }: ActionButtonProps) {
   const busy = stateBusy.includes(state);
-  const disabled = state === "incomplete" || rest.disabled || busy;
+  const disabled = rest.disabled || busy;
 
   const toneClass =
     tone === "danger"

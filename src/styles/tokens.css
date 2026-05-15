@@ -85,6 +85,15 @@
   --color-success-border: #a7f3d0;
   --color-success-text: #047857;
 
+  --color-switch-track-off: #e2e8f0;
+  --color-switch-track-off-border: #e2e8f0;
+  --color-switch-track-on: var(--color-brand);
+  --color-switch-track-on-border: var(--color-brand-hover);
+  --color-switch-thumb: #ffffff;
+  --shadow-switch-thumb: 0 1px 2px rgba(15, 23, 42, 0.14);
+  --color-switch-track-on-warning: var(--color-warning);
+  --color-switch-track-on-warning-border: var(--color-warning);
+
   --shadow-shell: 0 1px 2px 0 rgba(15, 23, 42, 0.06);
   --shadow-popover: 0 12px 24px -8px rgba(15, 23, 42, 0.2);
 
@@ -172,6 +181,15 @@
   --color-success-soft: rgba(52, 211, 153, 0.14);
   --color-success-border: rgba(52, 211, 153, 0.45);
   --color-success-text: #6ee7b7;
+
+  --color-switch-track-off: #334155;
+  --color-switch-track-off-border: #334155;
+  --color-switch-track-on: var(--color-brand);
+  --color-switch-track-on-border: var(--color-brand-hover);
+  --color-switch-thumb: #ffffff;
+  --shadow-switch-thumb: 0 1px 3px rgba(2, 6, 23, 0.45);
+  --color-switch-track-on-warning: var(--color-warning);
+  --color-switch-track-on-warning-border: var(--color-warning);
 
   --shadow-shell: 0 1px 2px 0 rgba(2, 6, 23, 0.45);
   --shadow-popover: 0 14px 26px -10px rgba(2, 6, 23, 0.6);

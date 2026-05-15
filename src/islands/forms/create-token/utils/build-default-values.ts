@@ -1,31 +1,33 @@
 import type { CreateTokenPlatform } from "../../../../lib/tool-config/create-token-platforms";
 import type { CreateTokenValues } from "../../../../lib/validation/create-token/create-token.schema";
+import { mergeDraftIntoDefaults } from "./create-token-draft-storage";
 
-/**
- * Default form values for each platform.
- *
- * Rules:
- * - Only include fields the platform actually shows. Hidden platform-specific
- *   fields are intentionally absent from the per-platform default object so
- *   they cannot accidentally appear in the payload.
- * - Amount-like fields stay as strings (no JS number precision loss).
- * - The image File is held in local React state, NOT inside form values.
- */
-export function buildCreateTokenDefaultValues(
-  platform: CreateTokenPlatform,
-): CreateTokenValues {
+const sharedDefaults = {
+  tokenName: "",
+  symbol: "",
+  description: undefined,
+  includeSocialLinks: false,
+  website: undefined,
+  telegram: undefined,
+  twitter: undefined,
+  includeAdvancedOptions: false,
+  includeCreatorInfo: false,
+  creatorName: undefined,
+  creatorWebsite: undefined,
+  includeVanityAddress: false,
+  vanityPrefix: undefined,
+  vanitySuffix: undefined,
+  vanityCaseSensitive: false,
+} as const;
+
+function buildPlatformDefaults(platform: CreateTokenPlatform): CreateTokenValues {
   switch (platform) {
     case "spl":
       return {
         platform: "spl",
-        tokenName: "",
-        symbol: "",
-        description: undefined,
-        website: undefined,
-        telegram: undefined,
-        twitter: undefined,
-        decimals: "9",
-        initialSupply: "1000000000",
+        ...sharedDefaults,
+        decimals: "",
+        initialSupply: "",
         revokeMintAuthority: false,
         revokeFreezeAuthority: false,
         makeImmutable: false,
@@ -34,14 +36,9 @@ export function buildCreateTokenDefaultValues(
     case "taxToken":
       return {
         platform: "taxToken",
-        tokenName: "",
-        symbol: "",
-        description: undefined,
-        website: undefined,
-        telegram: undefined,
-        twitter: undefined,
-        decimals: "9",
-        initialSupply: "1000000000",
+        ...sharedDefaults,
+        decimals: "",
+        initialSupply: "",
         transferFeeBps: "100",
         maxTransferFee: "1000000000",
         transferFeeAuthority: { kind: "self" },
@@ -54,24 +51,14 @@ export function buildCreateTokenDefaultValues(
     case "pumpfun":
       return {
         platform: "pumpfun",
-        tokenName: "",
-        symbol: "",
-        description: undefined,
-        website: undefined,
-        telegram: undefined,
-        twitter: undefined,
+        ...sharedDefaults,
         initialBuy: undefined,
       };
 
     case "raydiumLaunchlab":
       return {
         platform: "raydiumLaunchlab",
-        tokenName: "",
-        symbol: "",
-        description: undefined,
-        website: undefined,
-        telegram: undefined,
-        twitter: undefined,
+        ...sharedDefaults,
         launchSettings: undefined,
         initialBuy: undefined,
       };
@@ -79,13 +66,25 @@ export function buildCreateTokenDefaultValues(
     case "meteoraDbc":
       return {
         platform: "meteoraDbc",
-        tokenName: "",
-        symbol: "",
-        description: undefined,
-        website: undefined,
-        telegram: undefined,
-        twitter: undefined,
+        ...sharedDefaults,
         curvePreset: "balanced",
       };
   }
+}
+
+/** SSR-safe defaults — no sessionStorage reads. */
+export function buildCreateTokenStaticDefaults(
+  platform: CreateTokenPlatform,
+): CreateTokenValues {
+  return buildPlatformDefaults(platform);
+}
+
+/**
+ * Defaults merged with any session draft. Use only after mount to avoid
+ * hydration mismatches between server HTML and client sessionStorage.
+ */
+export function buildCreateTokenDefaultValues(
+  platform: CreateTokenPlatform,
+): CreateTokenValues {
+  return mergeDraftIntoDefaults(platform, buildPlatformDefaults(platform));
 }

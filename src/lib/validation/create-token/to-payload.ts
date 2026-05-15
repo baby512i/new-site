@@ -8,14 +8,6 @@ import type {
 } from "./create-token.schema";
 import type { CreateTokenPlatform } from "../../tool-config/create-token-platforms";
 
-/**
- * Wire payload sent to dxra-core-api. Each platform has its own shape.
- *
- * The `image` field is intentionally NOT included here. The dxra-api wrapper
- * (`src/lib/dxra-api/create-token.ts`) attaches the image descriptor itself
- * from the raw `File` it receives, so this function stays purely about
- * structured form data.
- */
 export type CreateTokenImageDescriptor =
   | {
       kind: "file";
@@ -32,6 +24,15 @@ interface CommonPayloadFields {
   website?: string;
   telegram?: string;
   twitter?: string;
+  creator?: {
+    name: string;
+    website?: string;
+  };
+  vanity?: {
+    prefix?: string;
+    suffix?: string;
+    caseSensitive: boolean;
+  };
 }
 
 export interface SplCreateTokenPayload extends CommonPayloadFields {
@@ -50,7 +51,6 @@ export interface TaxTokenCreateTokenPayload extends CommonPayloadFields {
   decimals: number;
   initialSupply: string;
   transferFeeBps: number;
-  /** Stays a string to keep large numbers safe across the wire. */
   maxTransferFee: string;
   transferFeeAuthority:
     | { kind: "self" }
@@ -69,7 +69,6 @@ export interface TaxTokenCreateTokenPayload extends CommonPayloadFields {
 
 export interface PumpFunCreateTokenPayload extends CommonPayloadFields {
   platform: "pumpfun";
-  /** Optional initial buy in SOL as a string for precision. */
   initialBuySol?: string;
 }
 
@@ -106,15 +105,55 @@ export type CreateTokenPayloadByPlatform<P extends CreateTokenPlatform> =
             ? MeteoraDbcCreateTokenPayload
             : never;
 
-function commonFields(values: CreateTokenValues): CommonPayloadFields {
-  return {
+type ValuesWithCommon = CreateTokenValues & {
+  includeSocialLinks?: boolean;
+  includeAdvancedOptions?: boolean;
+  includeCreatorInfo?: boolean;
+  creatorName?: string;
+  creatorWebsite?: string;
+  includeVanityAddress?: boolean;
+  vanityPrefix?: string;
+  vanitySuffix?: string;
+  vanityCaseSensitive?: boolean;
+};
+
+function commonFields(values: ValuesWithCommon): CommonPayloadFields {
+  const base: CommonPayloadFields = {
     tokenName: values.tokenName.trim(),
     symbol: values.symbol.trim(),
     description: trimToUndefined(values.description),
-    website: trimToUndefined(values.website),
-    telegram: trimToUndefined(values.telegram),
-    twitter: trimToUndefined(values.twitter),
   };
+
+  if (values.includeSocialLinks) {
+    base.website = trimToUndefined(values.website);
+    base.telegram = trimToUndefined(values.telegram);
+    base.twitter = trimToUndefined(values.twitter);
+  }
+
+  if (
+    values.includeAdvancedOptions &&
+    values.includeCreatorInfo &&
+    values.creatorName?.trim()
+  ) {
+    base.creator = {
+      name: values.creatorName.trim(),
+      website: trimToUndefined(values.creatorWebsite),
+    };
+  }
+
+  if (values.includeAdvancedOptions && values.includeVanityAddress) {
+    const prefix = trimToUndefined(values.vanityPrefix);
+    const suffix = trimToUndefined(values.vanitySuffix);
+    if (prefix || suffix) {
+      base.vanity = {
+        prefix,
+        suffix,
+        caseSensitive: Boolean(values.vanityCaseSensitive),
+      };
+    }
+  }
+
+  return base;
 }
 
 function trimToUndefined(value: string | undefined | null): string | undefined {
@@ -123,10 +162,6 @@ function trimToUndefined(value: string | undefined | null): string | undefined {
   return trimmed.length > 0 ? trimmed : undefined;
 }
 
-/**
- * Convert validated form state into the wire payload for dxra-core-api.
- * Hidden / irrelevant fields are dropped here, NOT inside the schema.
- */
 export function toPayload(values: CreateTokenValues): CreateTokenPayload {
   switch (values.platform) {
     case "spl":

@@ -10,12 +10,15 @@ export interface ReviewItem {
 interface ReviewPanelProps {
   title?: string;
   items: ReviewItem[];
+  /** Small square preview of the token image (object URL from parent). */
+  tokenImagePreviewUrl?: string | null;
   footer?: ReactNode;
 }
 
 export function ReviewPanel({
   title = "Review before signing",
   items,
+  tokenImagePreviewUrl,
   footer,
 }: ReviewPanelProps) {
   return (
@@ -29,6 +32,19 @@ export function ReviewPanel({
           Live
         </span>
       </header>
+
+      {tokenImagePreviewUrl ? (
+        <div className="flex items-center gap-2.5">
+          <img
+            src={tokenImagePreviewUrl}
+            alt=""
+            className="h-9 w-9 shrink-0 rounded-[var(--radius-sm)] border border-[var(--color-border)] object-cover"
+          />
+          <span className="text-xs font-medium text-[var(--color-text-muted)]">
+            Token image
+          </span>
+        </div>
+      ) : null}
 
       <dl className="grid gap-2">
         {items.map((item, index) => (

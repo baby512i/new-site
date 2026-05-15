@@ -1,25 +1,34 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useForm, useWatch, type Resolver } from "react-hook-form";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useForm, useWatch, type FieldErrors, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormShell } from "../components/FormShell";
 import { FeeSummary } from "../components/FeeSummary";
 import { ReviewPanel } from "../components/ReviewPanel";
 import { ActionButton } from "../components/ActionButton";
+import { ToastProvider } from "../../ui/toast/ToastProvider";
+import { useToast } from "../../ui/toast/useToast";
 import {
   CREATE_TOKEN_PLATFORMS,
   type CreateTokenPlatform,
 } from "../../../lib/tool-config/create-token-platforms";
 import {
+  getStoredSolanaNetwork,
+  normalizeSolanaNetwork,
+  type SolanaNetworkValue,
+} from "../../../lib/network/solana-network";
+import {
   getCreateTokenSchema,
   type CreateTokenValues,
 } from "../../../lib/validation/create-token/create-token.schema";
-import { PlatformSection } from "./sections/PlatformSection";
 import { TokenDetailsSection } from "./sections/TokenDetailsSection";
 import { MetadataSection } from "./sections/MetadataSection";
+import { AdvancedOptionsSection } from "./sections/AdvancedOptionsSection";
 import { PlatformOptionsSection } from "./sections/PlatformOptionsSection";
 import { AuthoritiesSection } from "./sections/AuthoritiesSection";
-import { ReviewCreateSection } from "./sections/ReviewCreateSection";
-import { buildCreateTokenDefaultValues } from "./utils/build-default-values";
+import {
+  buildCreateTokenDefaultValues,
+  buildCreateTokenStaticDefaults,
+} from "./utils/build-default-values";
 import { getPlatformFieldVisibility } from "./utils/get-platform-field-visibility";
 import {
   buildReviewItems,
@@ -30,6 +39,16 @@ import {
   getCreateTokenActionReadiness,
   type CreateTokenActionFlowState,
 } from "./utils/get-action-readiness";
+import {
+  getActionErrorMessage,
+  resolveCreateTokenActionErrorCode,
+} from "./utils/action-error-messages";
+import { scrollToFirstFormError } from "./utils/scroll-to-first-error";
+import { scrollToTokenImage } from "./utils/scroll-to-token-image";
+import {
+  splitFormValuesForDraft,
+  writeCreateTokenDraft,
+} from "./utils/create-token-draft-storage";
 
 export interface CreateTokenFormProps {
   initialPlatform: CreateTokenPlatform;
@@ -42,32 +61,29 @@ interface WalletStatusDetail {
 }
 
 const SECTIONS = {
-  platform: "platform",
   details: "details",
   metadata: "metadata",
+  advanced: "advanced",
   options: "options",
   authorities: "authorities",
-  review: "review",
 } as const;
 
-/**
- * The single React island for the Create Token form.
- *
- * Responsibilities (orchestration only — no platform-specific JSX):
- * - initialize RHF with the platform-scoped Zod schema
- * - track local UI state: image File, wallet status, action flow state
- * - watch minimal form values for the live review panel
- * - compute the action button's readiness via `getCreateTokenActionReadiness`
- * - lazy-import `runCreateTokenAction` on submit (which lazy-loads wallet +
- *   `@solana/web3.js`)
- *
- * Constraints honoured:
- * - No top-level wallet/Reown/Solana SDK imports.
- * - SEO content stays in static Astro components, not in this island.
- */
+function networkLabel(network: SolanaNetworkValue): string {
+  return network === "devnet" ? "Devnet" : "Mainnet";
+}
+
 export default function CreateTokenForm({
   initialPlatform,
 }: CreateTokenFormProps) {
+  return (
+    <ToastProvider>
+      <CreateTokenFormInner initialPlatform={initialPlatform} />
+    </ToastProvider>
+  );
+}
+
+function CreateTokenFormInner({ initialPlatform }: CreateTokenFormProps) {
+  const toast = useToast();
   const platform = CREATE_TOKEN_PLATFORMS[initialPlatform];
   const visibility = useMemo(
     () => getPlatformFieldVisibility(initialPlatform),
@@ -78,14 +94,14 @@ export default function CreateTokenForm({
     () => getCreateTokenSchema(initialPlatform),
     [initialPlatform],
   );
-  const defaultValues = useMemo(
-    () => buildCreateTokenDefaultValues(initialPlatform),
+  const staticDefaults = useMemo(
+    () => buildCreateTokenStaticDefaults(initialPlatform),
     [initialPlatform],
   );
 
   const form = useForm<CreateTokenValues>({
     resolver: zodResolver(schema) as unknown as Resolver<CreateTokenValues>,
-    defaultValues,
+    defaultValues: staticDefaults,
     mode: "onChange",
     shouldUnregister: false,
   });
@@ -93,47 +109,129 @@ export default function CreateTokenForm({
   const {
     control,
     handleSubmit,
+    reset,
     formState: { isValid, isDirty },
   } = form;
 
+  const draftHydratedRef = useRef(false);
+  useEffect(() => {
+    if (draftHydratedRef.current) return;
+    draftHydratedRef.current = true;
+    reset(buildCreateTokenDefaultValues(initialPlatform));
+  }, [initialPlatform, reset]);
+
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [walletStatus, setWalletStatus] = useState<WalletStatusDetail>(() =>
-    readCachedWalletStatus(),
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+  const [imageError, setImageError] = useState<string | undefined>();
+  const imageRequired = visibility.showImageUpload;
+  const hasRequiredImage = !imageRequired || Boolean(imageFile);
+  const formComplete = isValid && hasRequiredImage;
+  const [walletStatus, setWalletStatus] = useState<WalletStatusDetail>({});
+  const [network, setNetwork] = useState<SolanaNetworkValue>(() =>
+    normalizeSolanaNetwork(import.meta.env.PUBLIC_DEFAULT_NETWORK),
   );
   const [actionState, setActionState] = useState<CreateTokenActionFlowState>({
     stage: "idle",
   });
   const isSubmittingRef = useRef(false);
+  const draftTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const handler = (event: Event) => {
+    if (!imageFile) {
+      setImagePreviewUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(imageFile);
+    setImagePreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [imageFile]);
+
+  useEffect(() => {
+    setWalletStatus(readCachedWalletStatus());
+    setNetwork(getStoredSolanaNetwork());
+
+    const walletHandler = (event: Event) => {
       const detail = (event as CustomEvent<WalletStatusDetail>).detail ?? {};
       setWalletStatus(detail);
     };
-    window.addEventListener("solana-wallet-status-change", handler);
-    return () =>
-      window.removeEventListener("solana-wallet-status-change", handler);
+    const networkHandler = () => setNetwork(getStoredSolanaNetwork());
+    window.addEventListener("solana-wallet-status-change", walletHandler);
+    window.addEventListener("solana-network-change", networkHandler);
+    return () => {
+      window.removeEventListener("solana-wallet-status-change", walletHandler);
+      window.removeEventListener("solana-network-change", networkHandler);
+    };
   }, []);
 
-  // Watch the entire form for the live review panel. We treat the value as
-  // a wide structural snapshot so we don't have to fight the discriminated
-  // union narrowing in `buildReviewItems`.
   const watched = useWatch({
     control,
   }) as CreateTokenReviewSnapshot;
 
-  const reviewItems = buildReviewItems(watched, platform, visibility);
-  const feeLines = useMemo(() => buildFeeLines(platform), [platform]);
+  useEffect(() => {
+    if (draftTimerRef.current) clearTimeout(draftTimerRef.current);
+    draftTimerRef.current = setTimeout(() => {
+      const values = form.getValues() as Record<string, unknown>;
+      writeCreateTokenDraft(
+        splitFormValuesForDraft(initialPlatform, values),
+      );
+    }, 400);
+    return () => {
+      if (draftTimerRef.current) clearTimeout(draftTimerRef.current);
+    };
+  }, [watched, initialPlatform, form]);
+
+  const reviewItems = buildReviewItems(
+    watched,
+    platform,
+    visibility,
+    networkLabel(network),
+  );
+
+  const feeResult = useMemo(
+    () => buildFeeLines(initialPlatform, watched),
+    [initialPlatform, watched],
+  );
 
   const readiness = getCreateTokenActionReadiness({
-    isValid,
-    hasInteracted: isDirty,
+    isValid: formComplete,
+    hasInteracted: isDirty || Boolean(imageError),
     walletConnected: Boolean(walletStatus.isConnected && walletStatus.address),
     actionState,
   });
 
+  const handleImageChange = useCallback((file: File | null) => {
+    setImageFile(file);
+    if (file) setImageError(undefined);
+  }, []);
+
+  const validateRequiredImage = useCallback((): boolean => {
+    if (!imageRequired || imageFile) {
+      setImageError(undefined);
+      return true;
+    }
+    setImageError("Token image is required.");
+    return false;
+  }, [imageFile, imageRequired]);
+
+  const onInvalidSubmit = useCallback(
+    (fieldErrors: FieldErrors<CreateTokenValues>) => {
+      const imageValid = validateRequiredImage();
+      if (!imageValid) {
+        scrollToTokenImage();
+      } else {
+        scrollToFirstFormError(fieldErrors, visibility, form.getValues());
+      }
+      toast.warning("Please fix the highlighted fields.");
+    },
+    [form, toast, validateRequiredImage, visibility],
+  );
+
   const onValidSubmit = async (formValues: CreateTokenValues) => {
+    if (!validateRequiredImage()) {
+      scrollToTokenImage();
+      toast.warning("Please fix the highlighted fields.");
+      return;
+    }
     if (isSubmittingRef.current) return;
     isSubmittingRef.current = true;
     setActionState({ stage: "preparing" });
@@ -162,32 +260,49 @@ export default function CreateTokenForm({
         signature: result.signature,
         mintAddress: result.mintAddress,
       });
+      toast.success("Token created", "Your transaction was submitted successfully.");
     } catch (err) {
-      const action = await import("../../../lib/tool-actions/create-token");
-      const normalized = action.normalizeCreateTokenError(err);
-      setActionState({ stage: "error", message: normalized.message });
+      const code = resolveCreateTokenActionErrorCode(err);
+      toast.error(getActionErrorMessage(code));
+      setActionState({ stage: "error" });
     } finally {
       isSubmittingRef.current = false;
     }
   };
 
+  const walletHelper =
+    walletStatus.isConnected && walletStatus.address
+      ? `Connected: ${truncateMiddle(walletStatus.address)}`
+      : "Wallet not connected";
+
   return (
     <FormShell
-      title="Create token"
-      description="Fill the form below. The form is fully fillable before you connect a wallet — wallet is required only for the final signing step."
-      onSubmit={handleSubmit(onValidSubmit)}
+      onSubmit={handleSubmit(onValidSubmit, onInvalidSubmit)}
       rightPanel={
         <>
-          <ReviewPanel items={reviewItems} />
-          <FeeSummary
-            lines={feeLines}
-            totalLabel="Estimated total"
-            totalValue="Shown after review"
-            footer="Final fee numbers come from dxra-core-api right before you sign."
+          <ReviewPanel
+            items={reviewItems}
+            tokenImagePreviewUrl={
+              imageRequired ? imagePreviewUrl : null
+            }
+            footer={
+              <p className="text-xs leading-5 text-[var(--color-text-muted)]">
+                {walletHelper}
+              </p>
+            }
           />
+          <FeeSummary
+            lines={feeResult.lines}
+            totalLabel="Estimated total"
+            totalValue={feeResult.totalSol}
+            footer="Approximate fees from platform config. Final amounts are confirmed before you sign."
+          />
+
           <ActionButton
             state={readiness.state}
-            helper={readiness.helper}
+            helper={
+              readiness.state === "wallet-required" ? readiness.helper : undefined
+            }
             tone="primary"
             disabled={!readiness.canSubmit}
           >
@@ -196,8 +311,6 @@ export default function CreateTokenForm({
         </>
       }
     >
-      <PlatformSection id={SECTIONS.platform} platform={platform} />
-
       <TokenDetailsSection
         id={SECTIONS.details}
         platform={platform}
@@ -210,8 +323,12 @@ export default function CreateTokenForm({
         visibility={visibility}
         form={form}
         imageFile={imageFile}
-        onImageChange={setImageFile}
+        onImageChange={handleImageChange}
+        imageError={imageError}
+        onImageBlur={validateRequiredImage}
       />
+
+      <AdvancedOptionsSection id={SECTIONS.advanced} form={form} />
 
       <PlatformOptionsSection
         id={SECTIONS.options}
@@ -226,8 +343,6 @@ export default function CreateTokenForm({
         visibility={visibility}
         form={form}
       />
-
-      <ReviewCreateSection id={SECTIONS.review} actionState={actionState} />
     </FormShell>
   );
 }
@@ -240,7 +355,12 @@ function readCachedWalletStatus(): WalletStatusDetail {
       return { isConnected: true, address: cached };
     }
   } catch {
-    // localStorage may be unavailable (privacy mode) — treat as disconnected.
+    // localStorage may be unavailable.
   }
   return {};
+}
+
+function truncateMiddle(value: string, head = 6, tail = 4): string {
+  if (value.length <= head + tail + 3) return value;
+  return `${value.slice(0, head)}…${value.slice(-tail)}`;
 }
